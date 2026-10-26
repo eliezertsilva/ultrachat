@@ -84,7 +84,7 @@
     const r = await api('/api/config', read());
     current = r.config;
     const saved = document.getElementById('saved');
-    saved.textContent = r.restartNeeded ? 'Salvo — reinicie o MultiChat para trocar a porta' : 'Salvo ✓';
+    saved.textContent = r.restartNeeded ? 'Salvo — reinicie o UltraChat para trocar a porta' : 'Salvo ✓';
     saved.hidden = false;
     clearTimeout(save.t);
     save.t = setTimeout(() => (saved.hidden = true), 2500);

@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UltraChat — todos os seus chats no OBS</title>
+<meta name="description" content="Junte o chat do TikTok, Twitch, YouTube e Kick em um overlay só no OBS. Grátis, sem login, instala em um clique.">
+<meta property="og:title" content="UltraChat — todos os seus chats no OBS">
+<meta property="og:description" content="TikTok, Twitch, YouTube e Kick num chat só. Grátis e sem login.">
+<meta property="og:image" content="https://eliezertsilva.github.io/ultrachat/logo-256.png">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b10;
+    --bg2: #12121a;
+    --card: #16161f;
+    --line: #262633;
+    --text: #f2f2f7;
+    --muted: #a0a0b4;
+    --violet: #7C3AED;
+    --pink: #E11D74;
+    --tiktok: #FE2C55;
+    --twitch: #9146FF;
+    --youtube: #FF0033;
+    --kick: #53FC18;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 'Inter', 'Segoe UI', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* nav */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; text-decoration: none; letter-spacing: -0.02em; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  .nav-links { display: flex; gap: 24px; font-size: 15px; color: var(--muted); }
+  .nav-links a { text-decoration: none; }
+  .nav-links a:hover { color: var(--text); }
+
+  /* hero */
+  .hero { position: relative; overflow: hidden; padding: 88px 0 96px; }
+  .hero::before {
+    content: ''; position: absolute; inset: -40% -10% auto; height: 700px;
+    background: radial-gradient(closest-side, rgba(124,58,237,.35), transparent 70%),
+                radial-gradient(closest-side at 70% 60%, rgba(225,29,116,.25), transparent 70%);
+    pointer-events: none;
+  }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+  .eyebrow {
+    display: inline-flex; gap: 8px; align-items: center;
+    font-size: 13px; font-weight: 600; color: #d8ccff;
+    background: rgba(124,58,237,.15); border: 1px solid rgba(124,58,237,.4);
+    padding: 6px 12px; border-radius: 99px;
+  }
+  h1 {
+    font-size: clamp(40px, 6vw, 64px); line-height: 1.05; letter-spacing: -0.035em;
+    margin: 20px 0 18px; font-weight: 800;
+  }
+  .grad { background: linear-gradient(90deg, #a78bfa, #f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 520px; margin: 0 0 32px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 22px; border-radius: 12px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--line); transition: transform .15s, filter .15s;
+  }
+  .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+  .btn.primary { background: linear-gradient(135deg, var(--violet), var(--pink)); border: 0; box-shadow: 0 10px 30px -10px rgba(225,29,116,.6); }
+  .btn svg { width: 20px; height: 20px; }
+  .fine { font-size: 13px; color: var(--muted); margin-top: 14px; }
+
+  /* demo overlay */
+  .demo {
+    position: relative; height: 440px; border-radius: 24px; overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.1), rgba(0,0,0,.55)),
+      radial-gradient(circle at 30% 20%, #3b2a6b, transparent 60%),
+      radial-gradient(circle at 80% 80%, #6b1d45, transparent 55%),
+      #15121f;
+    border: 1px solid var(--line);
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.7);
+  }
+  .demo .live { position: absolute; top: 16px; left: 16px; font-size: 12px; font-weight: 800; letter-spacing: .06em; background: #e11d48; padding: 4px 10px; border-radius: 6px; }
+  .demo .feed {
+    position: absolute; inset: auto 16px 16px 16px; display: flex; flex-direction: column; gap: 8px;
+    max-height: calc(100% - 60px); overflow: hidden; justify-content: flex-end;
+  }
+  .msg {
+    --c: #888;
+    align-self: flex-start; max-width: 92%;
+    display: flex; gap: 10px; align-items: flex-start;
+    background: rgba(16,16,22,.72); backdrop-filter: blur(6px);
+    border-left: 3px solid var(--c); border-radius: 12px; padding: 8px 12px;
+    font-size: 15px; line-height: 1.35;
+    animation: enter .4s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  .msg .av { width: 30px; height: 30px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: #111; }
+  .msg .head { display: flex; align-items: center; gap: 6px; font-weight: 700; }
+  .msg .head svg { width: 15px; height: 15px; color: var(--c); }
+  .msg .role { font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px; background: #00a35c; color: #fff; }
+  .msg .role.sub { background: #6441a5; }
+  .msg.event { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 40%, transparent), rgba(16,16,22,.75) 75%); }
+  .msg .hl { color: var(--c); font-weight: 700; filter: brightness(1.3); }
+  @keyframes enter { from { opacity: 0; transform: translateX(-16px) scale(.97); } to { opacity: 1; transform: none; } }
+
+  /* sections */
+  section { padding: 88px 0; }
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+  h2 { font-size: clamp(30px, 4vw, 42px); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 14px; }
+  .section-head p { color: var(--muted); font-size: 18px; margin: 0; }
+
+  .platforms { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .pf {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px; border-top: 3px solid var(--c);
+  }
+  .pf svg { width: 34px; height: 34px; color: var(--c); }
+  .pf h3 { margin: 14px 0 6px; font-size: 19px; }
+  .pf p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .feat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+  .feat .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px;
+    background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(225,29,116,.2)); border: 1px solid rgba(167,139,250,.25); }
+  .feat h3 { margin: 16px 0 6px; font-size: 18px; }
+  .feat p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .alt { background: var(--bg2); border-block: 1px solid var(--line); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: s; }
+  .step { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 26px 26px; }
+  .step::before {
+    counter-increment: s; content: counter(s);
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--violet), var(--pink)); font-weight: 800; margin-bottom: 14px;
+  }
+  .step h3 { margin: 0 0 6px; font-size: 18px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: .88em; background: #0e0e14; border: 1px solid var(--line); padding: 2px 6px; border-radius: 6px; color: #e9ddff; word-break: break-all; }
+
+  .faq { max-width: 760px; margin: 0 auto; display: grid; gap: 12px; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::after { content: '+'; color: var(--muted); font-size: 20px; line-height: 1; }
+  details[open] summary::after { content: '–'; }
+  summary::-webkit-details-marker { display: none; }
+  details p { color: var(--muted); margin: 12px 0 0; }
+
+  .final { text-align: center; }
+  .final .card {
+    padding: 56px 24px; border-radius: 28px;
+    background: radial-gradient(circle at 20% 0%, rgba(124,58,237,.4), transparent 60%),
+                radial-gradient(circle at 90% 100%, rgba(225,29,116,.35), transparent 60%), var(--card);
+    border: 1px solid var(--line);
+  }
+  .final img { width: 72px; height: 72px; border-radius: 18px; }
+  .final .ctas { justify-content: center; margin-top: 28px; }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .platforms { grid-template-columns: repeat(2, 1fr); }
+    .features, .steps { grid-template-columns: 1fr; }
+    .nav-links a:not(.gh) { display: none; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 16px; }
+    .platforms { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 64px; }
+    .demo { height: 380px; }
+    section { padding: 64px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .msg { animation: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="logo.svg" alt="">UltraChat</a>
+    <div class="nav-links">
+      <a href="#recursos">Recursos</a>
+      <a href="#instalar">Como instalar</a>
+      <a href="#duvidas">Dúvidas</a>
+      <a class="gh" href="https://github.com/eliezertsilva/ultrachat">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">✦ Grátis e sem login</span>
+      <h1>Todos os seus chats.<br><span class="grad">Uma tela só.</span></h1>
+      <p class="lead">O UltraChat junta o chat do TikTok, Twitch, YouTube e Kick em um overlay bonito no OBS — e liga sozinho junto com ele.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-Setup.exe">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+          Baixar para Windows
+        </a>
+        <a class="btn" href="#instalar">Como funciona</a>
+      </div>
+      <p class="fine">Windows 10/11 · OBS Studio 28 ou mais novo · ~27 MB</p>
+    </div>
+    <div class="demo" aria-label="Exemplo do overlay com mensagens de várias plataformas">
+      <span class="live">AO VIVO</span>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+</header>
+
+<section id="recursos">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Quatro plataformas, um chat</h2>
+      <p>Cada mensagem chega com o ícone e a cor da plataforma, então você sabe na hora de onde ela veio.</p>
+    </div>
+    <div class="platforms">
+      <div class="pf" style="--c: var(--tiktok)">
+        <svg data-icon="tiktok"></svg>
+        <h3>TikTok</h3>
+        <p>Comentários, presentes com a quantidade, novos seguidores e entradas na live.</p>
+      </div>
+      <div class="pf" style="--c: var(--twitch)">
+        <svg data-icon="twitch"></svg>
+        <h3>Twitch</h3>
+        <p>Emotes, subs, bits e raids. Mensagens apagadas pelos mods somem do overlay.</p>
+      </div>
+      <div class="pf" style="--c: var(--youtube)">
+        <svg data-icon="youtube"></svg>
+        <h3>YouTube</h3>
+        <p>Encontra sua live sozinho pelo @ do canal. Super Chats e membros em destaque.</p>
+      </div>
+      <div class="pf" style="--c: var(--kick)">
+        <svg data-icon="kick"></svg>
+        <h3>Kick</h3>
+        <p>Chat com emotes, subs e subs de presente, tudo no mesmo lugar.</p>
+      </div>
+    </div>
+
+    <div class="features" style="margin-top: 16px">
+      <div class="feat"><div class="ico">⚡</div><h3>Liga com o OBS</h3><p>Instalou, esqueceu. O UltraChat abre escondido quando o OBS abre e fecha junto.</p></div>
+      <div class="feat"><div class="ico">🎨</div><h3>Três estilos</h3><p>Balões, só texto ou compacto. Ajuste fonte, fundo, alinhamento e tempo na tela.</p></div>
+      <div class="feat"><div class="ico">🧩</div><h3>Docks no OBS</h3><p>Leia o chat e mude as configurações sem sair do OBS — até numa segunda tela.</p></div>
+      <div class="feat"><div class="ico">🛡️</div><h3>Filtros</h3><p>Esconda comandos com “!” e bots como Nightbot e StreamElements.</p></div>
+      <div class="feat"><div class="ico">🔓</div><h3>Sem login</h3><p>Só leitura: não pede senha nem acesso às suas contas. Tudo roda no seu PC.</p></div>
+      <div class="feat"><div class="ico">🎯</div><h3>Overlays por cena</h3><p>Mostre só o TikTok numa cena e tudo junto em outra, direto pelo link da fonte.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="instalar" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Pronto em 2 minutos</h2>
+      <p>Não precisa instalar mais nada. O instalador já configura o OBS para você.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Instale</h3>
+        <p>Feche o OBS, baixe o <strong>UltraChat-Setup.exe</strong> e siga o instalador.</p>
+      </div>
+      <div class="step">
+        <h3>Conecte seus canais</h3>
+        <p>Abra o OBS. No dock <strong>UltraChat - Painel</strong>, ligue as plataformas e preencha seus canais.</p>
+      </div>
+      <div class="step">
+        <h3>Coloque na cena</h3>
+        <p>Adicione uma Fonte de Navegador com <code>http://localhost:8787/overlay.html</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="duvidas">
+  <div class="wrap">
+    <div class="section-head"><h2>Dúvidas</h2></div>
+    <div class="faq">
+      <details>
+        <summary>É grátis mesmo?</summary>
+        <p>Sim. O UltraChat é de código aberto e não tem plano pago.</p>
+      </details>
+      <details>
+        <summary>O Windows disse “O Windows protegeu o computador”. E agora?</summary>
+        <p>Isso aparece porque o instalador não tem assinatura digital paga. Clique em <strong>Mais informações → Executar assim mesmo</strong>. O código está todo no GitHub para quem quiser conferir.</p>
+      </details>
+      <details>
+        <summary>Precisa colocar minha senha das plataformas?</summary>
+        <p>Não. O UltraChat só lê o chat público da sua live, do mesmo jeito que um espectador.</p>
+      </details>
+      <details>
+        <summary>Funciona junto com o StreamElements?</summary>
+        <p>Sim. Os dois rodam lado a lado; o UltraChat só cuida do chat.</p>
+      </details>
+      <details>
+        <summary>O TikTok deu erro de “rate limit”.</summary>
+        <p>A conexão com o TikTok usa um serviço gratuito com limite de uso. Crie uma chave grátis no eulerstream.com e cole em <em>TikTok → Avançado</em> no painel.</p>
+      </details>
+      <details>
+        <summary>Como desinstalo?</summary>
+        <p>Em <em>Configurações do Windows → Aplicativos → UltraChat para OBS → Desinstalar</em>. A configuração do OBS é desfeita automaticamente.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <div class="card">
+      <img src="logo.svg" alt="">
+      <h2 style="margin-top: 18px">Leve o chat de todo mundo para a sua live</h2>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-Setup.exe">Baixar o UltraChat</a>
+        <a class="btn" href="https://github.com/eliezertsilva/ultrachat">Ver o código</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>UltraChat · feito para streamers</span>
+    <span>TikTok, Twitch, YouTube e Kick são marcas de seus donos.</span>
+  </div>
+</footer>
+
+<script>
+  const ICONS = {
+    tiktok: '<path fill="currentColor" d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z"/>',
+    twitch: '<path fill="currentColor" d="M4.3 2 3 5.4V19.3h4.7V22h2.7l2.6-2.7h3.9L22 14.2V2H4.3zm15.9 11.3-3.1 3.1h-4.8L9.7 19v-2.6H5.7V3.8h14.5v9.5zM17.3 7v5.3h-1.8V7h1.8zm-4.9 0v5.3h-1.8V7h1.8z"/>',
+    youtube: '<path fill="currentColor" d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/>',
+    kick: '<path fill="currentColor" d="M3 3h6v5h2V6h2V4h2V3h6v6h-2v2h-2v2h2v2h2v6h-6v-1h-2v-2h-2v-2H9v5H3z"/>',
+  };
+  document.querySelectorAll('svg[data-icon]').forEach((s) => {
+    s.setAttribute('viewBox', '0 0 24 24');
+    s.innerHTML = ICONS[s.dataset.icon];
+  });
+
+  const COLORS = { tiktok: '#FE2C55', twitch: '#9146FF', youtube: '#FF0033', kick: '#53FC18' };
+  const SCRIPT = [
+    ['tiktok', 'luana.gamer', '#f9a8d4', 'boa noite chat!! 💜'],
+    ['twitch', 'NightOwl', '#93c5fd', 'essa jogada foi absurda KEKW', 'mod'],
+    ['youtube', '@pedrohenrique', '#fcd34d', 'vim pelo YouTube, salve!'],
+    ['tiktok', 'carol_s', '#86efac', 'enviou 10x Rosa', null, true],
+    ['kick', 'ZéDoKick', '#bef264', 'kick também tá aqui 💚'],
+    ['twitch', 'marcelo_tv', '#c4b5fd', 'se inscreveu por 6 meses!', 'sub', true],
+    ['youtube', '@julia.m', '#fda4af', 'Super Chat R$ 10,00 — manda um salve!', null, true],
+    ['tiktok', 'thi.ago', '#67e8f9', 'como você junta todos os chats??'],
+    ['twitch', 'Bruna_', '#f0abfc', 'UltraChat 🔥'],
+  ];
+  const feed = document.getElementById('feed');
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  let i = 0;
+  function push() {
+    const [pf, name, avColor, text, role, event] = SCRIPT[i++ % SCRIPT.length];
+    const m = el('div', 'msg' + (event ? ' event' : ''));
+    m.style.setProperty('--c', COLORS[pf]);
+    const av = el('div', 'av', name.replace('@', '')[0].toUpperCase());
+    av.style.background = avColor;
+    const body = el('div');
+    const head = el('div', 'head');
+    const ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    ic.setAttribute('viewBox', '0 0 24 24');
+    ic.innerHTML = ICONS[pf];
+    head.append(ic);
+    if (role) head.append(el('span', 'role ' + role, role.toUpperCase()));
+    head.append(el('span', '', name));
+    body.append(head, el('div', event ? 'hl' : '', text));
+    m.append(av, body);
+    feed.append(m);
+    while (feed.children.length > 7) feed.firstChild.remove();
+  }
+  for (let k = 0; k < 4; k++) push();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(push, 1800);
+</script>
+</body>
+</html>

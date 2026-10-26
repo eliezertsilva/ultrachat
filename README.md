@@ -1,18 +1,22 @@
-# MultiChat para OBS
+<p align="center"><img src="assets/logo.svg" width="96" alt="UltraChat"></p>
+
+# UltraChat para OBS
 
 Junta o chat do **TikTok, Twitch, YouTube e Kick** em um overlay só para o OBS — sem login em nenhuma plataforma.
 
+**Site:** https://eliezertsilva.github.io/ultrachat/ · **[Baixar o instalador](https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-Setup.exe)**
+
 ## Instalação fácil (recomendado)
 
-Rode **`MultiChat-OBS-Setup.exe`** (com o OBS fechado), escolha a pasta e pronto:
+Rode **`UltraChat-Setup.exe`** (com o OBS fechado), escolha a pasta e pronto:
 - não precisa instalar Node.js (já vem junto);
-- o OBS fica configurado sozinho: o MultiChat liga escondido quando o OBS abre, e aparecem os docks **MultiChat - Chat** e **MultiChat - Painel** (menu *Docks*);
+- o OBS fica configurado sozinho: o UltraChat liga escondido quando o OBS abre, e aparecem os docks **UltraChat - Chat** e **UltraChat - Painel** (menu *Docks*);
 - falta só adicionar a Fonte de Navegador `http://localhost:8787/overlay.html` na sua cena.
 
-Para remover: *Configurações do Windows → Aplicativos → MultiChat para OBS → Desinstalar* (desfaz a configuração do OBS).
-As configurações originais do OBS ficam salvas com a extensão `.multichat-backup`.
+Para remover: *Configurações do Windows → Aplicativos → UltraChat para OBS → Desinstalar* (desfaz a configuração do OBS).
+As configurações originais do OBS ficam salvas com a extensão `.ultrachat-backup`.
 
-Para gerar o instalador a partir do código: `npm install`, baixe o `node.exe` para `installer\node\` e rode o Inno Setup 6 em `installer\multichat.iss`.
+Para gerar o instalador a partir do código: `npm install`, baixe o `node.exe` para `installer\node\` e rode o Inno Setup 6 em `installer\ultrachat.iss`.
 
 ## Como usar (a partir do código)
 
@@ -27,11 +31,11 @@ Use o botão **Enviar mensagens de teste** para posicionar o overlay sem estar a
 ### Iniciar junto com o OBS (recomendado)
 Faça isso uma vez só:
 1. OBS → **Ferramentas → Scripts**.
-2. Clique no **+** e selecione `obs-multichat.lua` (nesta pasta).
+2. Clique no **+** e selecione `obs-ultrachat.lua` (nesta pasta).
 
-Pronto: a partir daí o MultiChat liga escondido (sem janela) sempre que o OBS abre e desliga quando o OBS fecha — você não precisa mais abrir o `iniciar.bat`.
+Pronto: a partir daí o UltraChat liga escondido (sem janela) sempre que o OBS abre e desliga quando o OBS fecha — você não precisa mais abrir o `iniciar.bat`.
 Se trocar de *Coleção de cenas* no OBS, adicione o script nela também (o OBS guarda scripts por coleção).
-Erros ficam em `multichat.log`.
+Erros ficam em `ultrachat.log`.
 
 ### Ver o chat dentro do OBS (Dock)
 OBS → **Docks → Docks de navegador personalizados**:

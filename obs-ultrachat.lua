@@ -1,4 +1,4 @@
--- MultiChat para OBS: liga o servidor do chat quando o OBS abre e desliga quando fecha.
+-- UltraChat para OBS: liga o servidor do chat quando o OBS abre e desliga quando fecha.
 -- Instalação: OBS → Ferramentas → Scripts → "+" → selecione este arquivo.
 
 obs = obslua
@@ -10,7 +10,7 @@ local function folder()
 end
 
 function script_description()
-  return [[<h3>MultiChat para OBS</h3>
+  return [[<h3>UltraChat para OBS</h3>
 <p>Liga o chat unificado (TikTok, Twitch, YouTube, Kick) junto com o OBS.</p>
 <p>Painel: <a href="http://localhost:8787/">http://localhost:8787/</a><br>
 Overlay: <code>http://localhost:8787/overlay.html</code></p>]]

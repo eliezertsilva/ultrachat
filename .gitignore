@@ -1,5 +1,6 @@
 node_modules/
 config.json
-multichat.log
+ultrachat.log
 installer/node/
 installer/Output/
+.claude/

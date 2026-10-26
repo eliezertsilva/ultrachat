@@ -132,7 +132,7 @@ function sendTestMessages() {
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
-    console.log(`A porta ${config.port} já está em uso — provavelmente o MultiChat já está rodando.`);
+    console.log(`A porta ${config.port} já está em uso — provavelmente o UltraChat já está rodando.`);
     process.exit(0);
   }
   throw err;
@@ -141,7 +141,7 @@ server.on('error', (err) => {
 server.listen(config.port, HOST, () => {
   const base = `http://localhost:${config.port}`;
   console.log('');
-  console.log('  MultiChat para OBS rodando!');
+  console.log('  UltraChat para OBS rodando!');
   console.log(`  Painel de configuração: ${base}/`);
   console.log(`  Overlay (Fonte de Navegador): ${base}/overlay.html`);
   console.log(`  Dock (chat para você ler): ${base}/overlay.html?dock=1`);
@@ -152,7 +152,7 @@ server.listen(config.port, HOST, () => {
 process.on('unhandledRejection', (err) => console.error('[erro]', err?.message || err));
 process.on('uncaughtException', (err) => {
   if (err?.code === 'EADDRINUSE') {
-    console.log(`A porta ${config.port} já está em uso — o MultiChat provavelmente já está rodando.`);
+    console.log(`A porta ${config.port} já está em uso — o UltraChat provavelmente já está rodando.`);
     process.exit(0);
   }
   console.error('[erro]', err?.message || err);

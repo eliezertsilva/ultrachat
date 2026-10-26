@@ -1,4 +1,4 @@
-// Registers (or removes) MultiChat in OBS: the auto-start script in every
+// Registers (or removes) UltraChat in OBS: the auto-start script in every
 // scene collection and two custom browser docks. OBS must be closed.
 // Usage: node tools/configure-obs.js install|uninstall
 import fs from 'node:fs';
@@ -8,21 +8,23 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OBS_DIR = path.join(process.env.APPDATA || '', 'obs-studio');
-const SCRIPT_PATH = path.join(ROOT, 'obs-multichat.lua').replace(/\\/g, '/');
+const SCRIPT_PATH = path.join(ROOT, 'obs-ultrachat.lua').replace(/\\/g, '/');
 const PORT = 8787;
 // Docks open a local loader page that waits for the server before showing it.
 const LOADER = `file:///${path.join(ROOT, 'dock-loader.html').replace(/\\/g, '/')}`;
 const viaLoader = (url) => `${LOADER}?to=${encodeURIComponent(url)}`;
 const DOCKS = [
-  { title: 'MultiChat - Chat', url: viaLoader(`http://localhost:${PORT}/overlay.html?dock=1`) },
-  { title: 'MultiChat - Painel', url: viaLoader(`http://localhost:${PORT}/`) },
+  { title: 'UltraChat - Chat', url: viaLoader(`http://localhost:${PORT}/overlay.html?dock=1`) },
+  { title: 'UltraChat - Painel', url: viaLoader(`http://localhost:${PORT}/`) },
 ];
 
 const mode = process.argv[2] || 'install';
-const isOurs = (p) => /obs-multichat\.lua$/i.test(p || '');
+// Also matches the old "MultiChat" names so upgrades replace them instead of duplicating.
+const isOurs = (p) => /obs-(ultra|multi)chat\.lua$/i.test(p || '');
+const isOurDock = (title) => /^(Ultra|Multi)Chat - /.test(title || '');
 
 function backup(file) {
-  const bak = `${file}.multichat-backup`;
+  const bak = `${file}.ultrachat-backup`;
   if (!fs.existsSync(bak)) fs.copyFileSync(file, bak);
 }
 
@@ -65,8 +67,13 @@ function updateDocks() {
       docks = [];
     }
   }
-  docks = docks.filter((d) => !DOCKS.some((x) => x.title === d.title));
-  if (mode === 'install') docks.push(...DOCKS.map((d) => ({ ...d, uuid: randomUUID() })));
+  // Reuse the old dock's uuid (OBS keys the dock position on it) so the layout survives upgrades.
+  const oldUuid = {};
+  for (const d of docks) if (isOurDock(d.title) && d.uuid) oldUuid[d.title.replace(/^\w+Chat/, '')] = d.uuid;
+  docks = docks.filter((d) => !isOurDock(d.title));
+  if (mode === 'install') {
+    docks.push(...DOCKS.map((d) => ({ ...d, uuid: oldUuid[d.title.replace(/^\w+Chat/, '')] || randomUUID() })));
+  }
   const line = `ExtraBrowserDocks=${JSON.stringify(docks)}`;
   if (idx !== -1) lines[idx] = line;
   else {

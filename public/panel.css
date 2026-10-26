@@ -34,7 +34,7 @@ header {
   z-index: 2;
 }
 .brand { display: flex; align-items: center; gap: 12px; }
-.logo { font-size: 28px; }
+.logo { width: 36px; height: 36px; border-radius: 9px; }
 h1 { margin: 0; font-size: 18px; }
 .sub { margin: 0; color: var(--muted); font-size: 13px; }
 

@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title MultiChat para OBS
+title UltraChat para OBS
 cd /d "%~dp0"
 where node >nul 2>nul
 if errorlevel 1 (

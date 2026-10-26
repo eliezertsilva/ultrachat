@@ -2,16 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>MultiChat</title>
+<title>UltraChat</title>
 <style>
   html, body { margin: 0; height: 100%; background: #18181b; color: #9a9aab;
     font: 14px 'Segoe UI', system-ui, sans-serif; display: grid; place-items: center; }
 </style>
 </head>
 <body>
-<p id="msg">Iniciando o MultiChat…</p>
+<p id="msg">Iniciando o UltraChat…</p>
 <script>
-  // OBS opens docks a moment before the MultiChat server is ready.
+  // OBS opens docks a moment before the UltraChat server is ready.
   // This local page waits for the server, then goes to the real page.
   const target = new URLSearchParams(location.search).get('to') || 'http://localhost:8787/';
   const origin = new URL(target).origin;
@@ -22,7 +22,7 @@
     s.onload = () => location.replace(target);
     s.onerror = () => {
       s.remove();
-      if (++tries > 15) document.getElementById('msg').textContent = 'Aguardando o servidor do MultiChat…';
+      if (++tries > 15) document.getElementById('msg').textContent = 'Aguardando o servidor do UltraChat…';
       setTimeout(check, 1000);
     };
     document.head.append(s);

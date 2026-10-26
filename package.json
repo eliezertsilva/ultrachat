@@ -1,5 +1,5 @@
 {
-  "name": "multichat-obs",
+  "name": "ultrachat",
   "version": "1.0.0",
   "description": "Chat unificado (TikTok, Twitch, YouTube, Kick) para OBS",
   "main": "src/server.js",
