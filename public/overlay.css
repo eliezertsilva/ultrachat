@@ -1,0 +1,187 @@
+:root {
+  --font-size: 18px;
+  --bg-alpha: 0.6;
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.7);
+  --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  font-family: var(--font);
+  font-size: var(--font-size);
+  color: var(--text);
+}
+
+#chat {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.4em;
+  padding: 0.6em;
+  overflow: hidden;
+}
+
+body.align-right #chat { align-items: flex-end; }
+
+/* ---------- message ---------- */
+.msg {
+  --accent: #888;
+  display: flex;
+  gap: 0.55em;
+  align-items: flex-start;
+  max-width: 100%;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.msg[data-platform="tiktok"]  { --accent: #FE2C55; }
+.msg[data-platform="twitch"]  { --accent: #9146FF; }
+.msg[data-platform="youtube"] { --accent: #FF0033; }
+.msg[data-platform="kick"]    { --accent: #53FC18; }
+
+.avatar {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  flex: none;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.body { min-width: 0; }
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  flex-wrap: wrap;
+}
+
+.pf-icon {
+  display: inline-flex;
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+}
+.pf-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
+
+.name { font-weight: 700; }
+
+.role {
+  font-size: 0.62em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.12em 0.45em;
+  border-radius: 0.35em;
+  text-shadow: none;
+  color: #fff;
+  background: #555;
+}
+.role.owner { background: #e5a00d; color: #1a1300; }
+.role.mod { background: #00a35c; }
+.role.vip { background: #e005b9; }
+.role.sub { background: #6441a5; }
+.role.verified { background: transparent; color: #9fd0ff; font-size: 0.8em; padding: 0; }
+.badge-img { width: 1.05em; height: 1.05em; }
+
+.text { color: var(--text); }
+.text .emote {
+  height: 1.6em;
+  vertical-align: middle;
+  margin: -0.2em 0.05em;
+}
+
+/* Events: gifts, subs, super chats... */
+.highlight { font-weight: 700; color: var(--accent); filter: brightness(1.25); }
+.amount {
+  display: inline-block;
+  font-size: 0.8em;
+  font-weight: 800;
+  padding: 0.1em 0.5em;
+  border-radius: 1em;
+  background: var(--accent);
+  color: #fff;
+  text-shadow: none;
+}
+.msg[data-platform="kick"] .amount { color: #0b1a00; }
+.event-img { height: 2em; vertical-align: middle; }
+
+/* ---------- theme: bubble ---------- */
+.theme-bubble .msg {
+  background: rgba(16, 16, 22, var(--bg-alpha));
+  border-left: 0.22em solid var(--accent);
+  border-radius: 0.7em;
+  padding: 0.45em 0.7em;
+  text-shadow: none;
+  backdrop-filter: blur(4px);
+}
+.theme-bubble .msg.event {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 35%, transparent), rgba(16,16,22,var(--bg-alpha)) 70%);
+}
+.theme-bubble .text { display: block; margin-top: 0.1em; }
+.theme-bubble .msg, .theme-compact .msg { align-self: flex-start; }
+.align-right.theme-bubble .msg, .align-right.theme-compact .msg { align-self: flex-end; }
+
+/* ---------- theme: clean (text only, no background) ---------- */
+.theme-clean .msg { text-shadow: 0 0 3px #000, 0 1px 3px #000, 0 0 6px rgba(0,0,0,.8); }
+.theme-clean .body { display: block; }
+.theme-clean .head { display: inline-flex; margin-right: 0.35em; }
+
+/* ---------- theme: compact (one line per message) ---------- */
+.theme-compact #chat { gap: 0.15em; }
+.theme-compact .msg { align-items: center; padding: 0.15em 0.4em; border-radius: 0.4em; background: rgba(0,0,0,var(--bg-alpha)); }
+.theme-compact .avatar { width: 1.4em; height: 1.4em; }
+.theme-compact .head { display: inline-flex; margin-right: 0.35em; }
+.theme-compact .body { display: block; }
+
+/* ---------- animations ---------- */
+.animate .msg { animation: enter 0.35s cubic-bezier(.2,.9,.3,1.2) both; }
+.animate .msg.leaving { animation: leave 0.5s ease forwards; }
+@keyframes enter {
+  from { opacity: 0; transform: translateX(-1.5em) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+.align-right.animate .msg { animation-name: enter-right; }
+@keyframes enter-right {
+  from { opacity: 0; transform: translateX(1.5em) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes leave { to { opacity: 0; transform: translateY(-0.5em); } }
+
+.no-avatars .avatar,
+.no-icons .pf-icon,
+.no-badges .role,
+.no-badges .badge-img { display: none; }
+
+/* ---------- dock mode (OBS custom browser dock: a chat for you to read) ---------- */
+body.dock {
+  background: #18181b;
+  overflow: auto;
+}
+body.dock #chat {
+  position: static;
+  min-height: 100%;
+  justify-content: flex-end;
+  overflow: visible;
+}
+body.dock .msg { animation: none !important; }
+
+#offline {
+  position: fixed;
+  left: 0.6em;
+  top: 0.6em;
+  background: #b00020;
+  color: #fff;
+  font-size: 14px;
+  padding: 0.4em 0.7em;
+  border-radius: 0.4em;
+}

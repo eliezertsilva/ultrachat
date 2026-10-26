@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MultiChat — Painel</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">💬</span>
+      <div>
+        <h1>MultiChat para OBS</h1>
+        <p class="sub">TikTok + Twitch + YouTube + Kick num chat só</p>
+      </div>
+    </div>
+    <span id="conn" class="pill off">conectando…</span>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. Links para o OBS</h2>
+      <div class="link-row">
+        <div>
+          <strong>Overlay da live</strong>
+          <small>OBS → Fontes → + → <em>Navegador</em> → cole este URL (ex.: 400×600)</small>
+        </div>
+        <code id="overlayUrl"></code>
+        <button type="button" class="ghost" data-copy="overlayUrl">Copiar</button>
+      </div>
+      <div class="link-row">
+        <div>
+          <strong>Chat para você ler (Dock)</strong>
+          <small>OBS → Docks → <em>Docks de navegador personalizados</em></small>
+        </div>
+        <code id="dockUrl"></code>
+        <button type="button" class="ghost" data-copy="dockUrl">Copiar</button>
+      </div>
+      <div class="link-row">
+        <div>
+          <strong>Este painel (Dock)</strong>
+          <small>Também dá para colocar o painel dentro do OBS</small>
+        </div>
+        <code id="panelUrl"></code>
+        <button type="button" class="ghost" data-copy="panelUrl">Copiar</button>
+      </div>
+    </section>
+
+    <form id="form">
+      <section class="card">
+        <h2>2. Plataformas</h2>
+        <div class="platforms">
+          <div class="platform" data-p="tiktok">
+            <div class="p-head">
+              <span class="p-icon" data-icon="tiktok"></span>
+              <h3>TikTok</h3>
+              <label class="switch"><input type="checkbox" name="tiktok.enabled"><span></span></label>
+            </div>
+            <label>Usuário (@)
+              <input name="tiktok.username" placeholder="@seuusuario" autocomplete="off">
+            </label>
+            <div class="checks">
+              <label><input type="checkbox" name="tiktok.showGifts"> Presentes</label>
+              <label><input type="checkbox" name="tiktok.showFollows"> Novos seguidores</label>
+              <label><input type="checkbox" name="tiktok.showShares"> Compartilhamentos</label>
+              <label><input type="checkbox" name="tiktok.showJoins"> Entradas na live</label>
+            </div>
+            <details>
+              <summary>Avançado</summary>
+              <label>API key do Euler Stream (opcional)
+                <input name="tiktok.signApiKey" type="password" placeholder="deixe vazio se estiver funcionando" autocomplete="off">
+              </label>
+              <small>Só é necessária se aparecer erro de limite (rate limit). Grátis em eulerstream.com.</small>
+            </details>
+            <p class="status" data-status="tiktok"></p>
+          </div>
+
+          <div class="platform" data-p="twitch">
+            <div class="p-head">
+              <span class="p-icon" data-icon="twitch"></span>
+              <h3>Twitch</h3>
+              <label class="switch"><input type="checkbox" name="twitch.enabled"><span></span></label>
+            </div>
+            <label>Canal
+              <input name="twitch.channel" placeholder="seucanal" autocomplete="off">
+            </label>
+            <small>Não precisa de login. Subs, bits e raids aparecem destacados.</small>
+            <p class="status" data-status="twitch"></p>
+          </div>
+
+          <div class="platform" data-p="youtube">
+            <div class="p-head">
+              <span class="p-icon" data-icon="youtube"></span>
+              <h3>YouTube</h3>
+              <label class="switch"><input type="checkbox" name="youtube.enabled"><span></span></label>
+            </div>
+            <label>Canal (@) ou link da live
+              <input name="youtube.channel" placeholder="@seucanal ou https://youtube.com/watch?v=…" autocomplete="off">
+            </label>
+            <small>Com o @, a live atual é encontrada sozinha. Super Chats aparecem destacados.</small>
+            <p class="status" data-status="youtube"></p>
+          </div>
+
+          <div class="platform" data-p="kick">
+            <div class="p-head">
+              <span class="p-icon" data-icon="kick"></span>
+              <h3>Kick</h3>
+              <label class="switch"><input type="checkbox" name="kick.enabled"><span></span></label>
+            </div>
+            <label>Canal
+              <input name="kick.channel" placeholder="seucanal" autocomplete="off">
+            </label>
+            <details>
+              <summary>Chatroom ID (se a busca automática falhar)</summary>
+              <label>Chatroom ID
+                <input name="kick.chatroomId" placeholder="ex.: 123456" autocomplete="off" inputmode="numeric">
+              </label>
+              <small>Abra <code>kick.com/api/v2/channels/SEUCANAL</code> no navegador e copie o número de <code>"chatroom":{"id":…</code></small>
+              <label>Pusher key (só se a Kick trocar a chave de novo)
+                <input name="kick.pusherKey" placeholder="vazio = padrão" autocomplete="off">
+              </label>
+            </details>
+            <p class="status" data-status="kick"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. Aparência</h2>
+        <div class="grid">
+          <label>Estilo
+            <select name="overlay.theme">
+              <option value="bubble">Balões</option>
+              <option value="clean">Só texto (sem fundo)</option>
+              <option value="compact">Compacto (1 linha)</option>
+            </select>
+          </label>
+          <label>Alinhamento
+            <select name="overlay.align">
+              <option value="left">Esquerda</option>
+              <option value="right">Direita</option>
+            </select>
+          </label>
+          <label>Tamanho da fonte <output data-for="overlay.fontSize"></output>
+            <input type="range" name="overlay.fontSize" min="10" max="48" step="1">
+          </label>
+          <label>Opacidade do fundo <output data-for="overlay.bgOpacity"></output>
+            <input type="range" name="overlay.bgOpacity" min="0" max="1" step="0.05">
+          </label>
+          <label>Máximo de mensagens na tela
+            <input type="number" name="overlay.maxMessages" min="1" max="200">
+          </label>
+          <label>Sumir após (segundos, 0 = nunca)
+            <input type="number" name="overlay.hideAfter" min="0" max="3600">
+          </label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" name="overlay.showAvatars"> Foto do perfil</label>
+          <label><input type="checkbox" name="overlay.showPlatformIcon"> Ícone da plataforma</label>
+          <label><input type="checkbox" name="overlay.showBadges"> Selos (MOD, SUB…)</label>
+          <label><input type="checkbox" name="overlay.animation"> Animações</label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>4. Filtros</h2>
+        <div class="checks">
+          <label><input type="checkbox" name="filters.hideCommands"> Esconder comandos (mensagens que começam com “!”)</label>
+        </div>
+        <label>Usuários bloqueados (separados por vírgula)
+          <input name="filters.blockedUsers" placeholder="nightbot, streamelements" autocomplete="off">
+        </label>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="primary">Salvar e aplicar</button>
+        <button type="button" id="testBtn">Enviar mensagens de teste</button>
+        <button type="button" id="clearBtn" class="ghost">Limpar overlay</button>
+        <button type="button" id="reconnectBtn" class="ghost">Reconectar tudo</button>
+        <span id="saved" class="saved" hidden>Salvo ✓</span>
+      </div>
+    </form>
+
+    <section class="card">
+      <h2>Prévia</h2>
+      <div class="preview"><iframe id="preview" title="Prévia do overlay"></iframe></div>
+    </section>
+  </main>
+
+  <script src="common.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

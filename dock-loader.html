@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>MultiChat</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #18181b; color: #9a9aab;
+    font: 14px 'Segoe UI', system-ui, sans-serif; display: grid; place-items: center; }
+</style>
+</head>
+<body>
+<p id="msg">Iniciando o MultiChat…</p>
+<script>
+  // OBS opens docks a moment before the MultiChat server is ready.
+  // This local page waits for the server, then goes to the real page.
+  const target = new URLSearchParams(location.search).get('to') || 'http://localhost:8787/';
+  const origin = new URL(target).origin;
+  let tries = 0;
+  function check() {
+    const s = document.createElement('script');
+    s.src = origin + '/common.js?t=' + Date.now();
+    s.onload = () => location.replace(target);
+    s.onerror = () => {
+      s.remove();
+      if (++tries > 15) document.getElementById('msg').textContent = 'Aguardando o servidor do MultiChat…';
+      setTimeout(check, 1000);
+    };
+    document.head.append(s);
+  }
+  check();
+</script>
+</body>
+</html>

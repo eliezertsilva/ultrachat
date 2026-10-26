@@ -1,0 +1,159 @@
+import express from 'express';
+import { createServer } from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { WebSocketServer } from 'ws';
+import { loadConfig, saveConfig } from './config.js';
+import { Hub } from './hub.js';
+import { TwitchConnector } from './connectors/twitch.js';
+import { TikTokConnector } from './connectors/tiktok.js';
+import { YouTubeConnector } from './connectors/youtube.js';
+import { KickConnector } from './connectors/kick.js';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const HOST = '127.0.0.1';
+
+let config = loadConfig();
+const hub = new Hub(() => config);
+
+const connectors = {
+  twitch: new TwitchConnector(hub),
+  tiktok: new TikTokConnector(hub),
+  youtube: new YouTubeConnector(hub),
+  kick: new KickConnector(hub),
+};
+
+/** Starts/stops each connector; only touches the ones whose settings changed. */
+function applyConnectors(prev) {
+  for (const [name, conn] of Object.entries(connectors)) {
+    const now = config[name];
+    const changed = !prev || JSON.stringify(prev[name]) !== JSON.stringify(now);
+    if (!changed) continue;
+    if (now.enabled) conn.start({ ...now });
+    else conn.stop();
+  }
+}
+
+// ---------- HTTP ----------
+const app = express();
+app.use(express.json({ limit: '1mb' }));
+app.use(express.static(path.join(ROOT, 'public')));
+
+app.get('/api/config', (_req, res) => res.json(config));
+
+app.post('/api/config', (req, res) => {
+  const prev = config;
+  config = saveConfig(req.body || {});
+  applyConnectors(prev);
+  broadcast({ type: 'config', overlay: config.overlay });
+  res.json({ ok: true, config, restartNeeded: prev.port !== config.port });
+});
+
+app.post('/api/reconnect', (_req, res) => {
+  applyConnectors(null);
+  res.json({ ok: true });
+});
+
+app.post('/api/clear', (_req, res) => {
+  hub.clear();
+  res.json({ ok: true });
+});
+
+app.post('/api/test', (_req, res) => {
+  sendTestMessages();
+  res.json({ ok: true });
+});
+
+app.post('/api/shutdown', (_req, res) => {
+  res.json({ ok: true });
+  console.log('Encerrando a pedido do OBS...');
+  setTimeout(() => process.exit(0), 200);
+});
+
+// ---------- WebSocket for overlays and the panel ----------
+const server = createServer(app);
+const wss = new WebSocketServer({ server, path: '/ws' });
+wss.on('error', () => {}); // listen errors are handled on `server` below
+
+function broadcast(payload) {
+  const data = JSON.stringify(payload);
+  for (const client of wss.clients) {
+    if (client.readyState === 1) client.send(data);
+  }
+}
+
+hub.on('broadcast', broadcast);
+
+wss.on('connection', (ws) => {
+  ws.send(JSON.stringify({ type: 'hello', overlay: config.overlay, history: hub.history, status: hub.status }));
+});
+
+// Keep sockets alive behind OBS's browser (it can silently drop idle sockets).
+setInterval(() => {
+  for (const client of wss.clients) if (client.readyState === 1) client.ping();
+}, 30_000);
+
+function sendTestMessages() {
+  const samples = [
+    {
+      platform: 'tiktok',
+      user: { name: 'Fã do TikTok', login: 'fa_tiktok', roles: ['sub'] },
+      parts: [{ type: 'text', text: 'Mensagem de teste vinda do TikTok! 🎉' }],
+    },
+    {
+      platform: 'twitch',
+      user: { name: 'ViewerTwitch', login: 'viewertwitch', color: '#1E90FF', roles: ['mod'] },
+      parts: [
+        { type: 'text', text: 'Olá do chat da Twitch ' },
+        { type: 'emote', url: 'https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/2.0', alt: 'Kappa' },
+      ],
+    },
+    {
+      platform: 'youtube',
+      user: { name: '@inscritoYT', login: 'inscritoyt', roles: ['member'] },
+      parts: [{ type: 'text', text: 'Teste do YouTube funcionando 👍' }],
+    },
+    {
+      platform: 'kick',
+      user: { name: 'KickFan', login: 'kickfan', color: '#53FC18', roles: ['vip'] },
+      parts: [{ type: 'text', text: 'Kick também aparece aqui!' }],
+    },
+    {
+      platform: 'tiktok',
+      type: 'gift',
+      user: { name: 'Doador', login: 'doador' },
+      highlight: 'enviou 5x Rosa',
+      amount: '5 💎',
+      parts: [],
+    },
+  ];
+  samples.forEach((s, i) => setTimeout(() => hub.publish(s), i * 600));
+}
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`A porta ${config.port} já está em uso — provavelmente o MultiChat já está rodando.`);
+    process.exit(0);
+  }
+  throw err;
+});
+
+server.listen(config.port, HOST, () => {
+  const base = `http://localhost:${config.port}`;
+  console.log('');
+  console.log('  MultiChat para OBS rodando!');
+  console.log(`  Painel de configuração: ${base}/`);
+  console.log(`  Overlay (Fonte de Navegador): ${base}/overlay.html`);
+  console.log(`  Dock (chat para você ler): ${base}/overlay.html?dock=1`);
+  console.log('');
+  applyConnectors(null);
+});
+
+process.on('unhandledRejection', (err) => console.error('[erro]', err?.message || err));
+process.on('uncaughtException', (err) => {
+  if (err?.code === 'EADDRINUSE') {
+    console.log(`A porta ${config.port} já está em uso — o MultiChat provavelmente já está rodando.`);
+    process.exit(0);
+  }
+  console.error('[erro]', err?.message || err);
+});

@@ -1,0 +1,5 @@
+node_modules/
+config.json
+multichat.log
+installer/node/
+installer/Output/
