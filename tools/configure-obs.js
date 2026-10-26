@@ -1,17 +1,19 @@
 // Registers (or removes) UltraChat in OBS: the auto-start script in every
 // scene collection and two custom browser docks. OBS must be closed.
+// Works on Windows, macOS and Linux (including the Flatpak OBS).
 // Usage: node tools/configure-obs.js install|uninstall
+// For tests, OBS_CONFIG_DIR points at a single obs-studio folder.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OBS_DIR = path.join(process.env.APPDATA || '', 'obs-studio');
 const SCRIPT_PATH = path.join(ROOT, 'obs-ultrachat.lua').replace(/\\/g, '/');
 const PORT = 8787;
 // Docks open a local loader page that waits for the server before showing it.
-const LOADER = `file:///${path.join(ROOT, 'dock-loader.html').replace(/\\/g, '/')}`;
+const LOADER = pathToFileURL(path.join(ROOT, 'dock-loader.html')).href;
 const viaLoader = (url) => `${LOADER}?to=${encodeURIComponent(url)}`;
 const DOCKS = [
   { title: 'UltraChat - Chat', url: viaLoader(`http://localhost:${PORT}/overlay.html?dock=1`) },
@@ -23,13 +25,31 @@ const mode = process.argv[2] || 'install';
 const isOurs = (p) => /obs-(ultra|multi)chat\.lua$/i.test(p || '');
 const isOurDock = (title) => /^(Ultra|Multi)Chat - /.test(title || '');
 
+/** Every OBS settings folder that exists for this user. */
+function obsDirs() {
+  if (process.env.OBS_CONFIG_DIR) return [process.env.OBS_CONFIG_DIR];
+  const home = os.homedir();
+  let candidates;
+  if (process.platform === 'win32') {
+    candidates = [path.join(process.env.APPDATA || '', 'obs-studio')];
+  } else if (process.platform === 'darwin') {
+    candidates = [path.join(home, 'Library', 'Application Support', 'obs-studio')];
+  } else {
+    candidates = [
+      path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'obs-studio'),
+      path.join(home, '.var', 'app', 'com.obsproject.Studio', 'config', 'obs-studio'), // Flatpak
+    ];
+  }
+  return candidates.filter((d) => fs.existsSync(d));
+}
+
 function backup(file) {
   const bak = `${file}.ultrachat-backup`;
   if (!fs.existsSync(bak)) fs.copyFileSync(file, bak);
 }
 
-function updateSceneCollections() {
-  const dir = path.join(OBS_DIR, 'basic', 'scenes');
+function updateSceneCollections(obsDir) {
+  const dir = path.join(obsDir, 'basic', 'scenes');
   if (!fs.existsSync(dir)) return 0;
   let count = 0;
   for (const name of fs.readdirSync(dir)) {
@@ -52,11 +72,12 @@ function updateSceneCollections() {
   return count;
 }
 
-function updateDocks() {
+function updateDocks(obsDir) {
   // OBS 30+ keeps docks in user.ini; older versions in global.ini.
-  const file = ['user.ini', 'global.ini'].map((f) => path.join(OBS_DIR, f)).find((f) => fs.existsSync(f));
+  const file = ['user.ini', 'global.ini'].map((f) => path.join(obsDir, f)).find((f) => fs.existsSync(f));
   if (!file) return false;
   const text = fs.readFileSync(file, 'utf8');
+  const eol = text.includes('\r\n') ? '\r\n' : '\n';
   const lines = text.split(/\r?\n/);
   const idx = lines.findIndex((l) => l.startsWith('ExtraBrowserDocks='));
   let docks = [];
@@ -85,14 +106,17 @@ function updateDocks() {
     lines.splice(sec + 1, 0, line);
   }
   backup(file);
-  fs.writeFileSync(file, lines.join('\r\n'));
+  fs.writeFileSync(file, lines.join(eol));
   return true;
 }
 
-if (!fs.existsSync(OBS_DIR)) {
-  console.log('OBS não encontrado para este usuário — nada a configurar.');
+const dirs = obsDirs();
+if (!dirs.length) {
+  console.log('OBS não encontrado para este usuário — abra o OBS uma vez e rode a instalação de novo.');
   process.exit(0);
 }
-const n = updateSceneCollections();
-const docks = updateDocks();
-console.log(`${mode}: script em ${n} coleção(ões) de cenas; docks ${docks ? 'ok' : 'não alterados'}.`);
+for (const dir of dirs) {
+  const n = updateSceneCollections(dir);
+  const docks = updateDocks(dir);
+  console.log(`${mode} (${dir}): script em ${n} coleção(ões) de cenas; docks ${docks ? 'ok' : 'não alterados'}.`);
+}

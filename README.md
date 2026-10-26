@@ -8,6 +8,32 @@ Junta o chat do **TikTok, Twitch, YouTube e Kick** em um overlay só para o OBS 
 
 ## Instalação fácil (recomendado)
 
+Baixe o pacote do seu sistema na [página de releases](https://github.com/eliezertsilva/ultrachat/releases/latest):
+
+| Sistema | Arquivo |
+|---|---|
+| Windows 10/11 | `UltraChat-Setup.exe` |
+| macOS com Apple Silicon (M1–M4) | `UltraChat-darwin-arm64.tar.gz` |
+| macOS com Intel | `UltraChat-darwin-x64.tar.gz` |
+| Linux (PC comum) | `UltraChat-linux-x64.tar.gz` |
+| Linux ARM (ex.: Raspberry Pi 5) | `UltraChat-linux-arm64.tar.gz` |
+
+### macOS
+1. Feche o OBS.
+2. Dê dois cliques no `.tar.gz` para extrair e abra a pasta **UltraChat**.
+3. Clique com o botão direito em **Instalar UltraChat.command → Abrir** (na primeira vez o macOS pede essa confirmação porque o arquivo não é assinado).
+4. Abra o OBS — o UltraChat liga sozinho e os docks aparecem.
+
+Instala em `~/Library/Application Support/UltraChat`. Para remover: `sh ~/Library/Application\ Support/UltraChat/uninstall.sh`.
+
+### Linux
+```sh
+tar -xzf UltraChat-linux-x64.tar.gz
+sh UltraChat/install.sh
+```
+Instala em `~/.local/share/ultrachat` e configura o OBS normal e o OBS via Flatpak. Para remover: `sh ~/.local/share/ultrachat/uninstall.sh`.
+
+### Windows
 Rode **`UltraChat-Setup.exe`** (com o OBS fechado), escolha a pasta e pronto:
 - não precisa instalar Node.js (já vem junto);
 - o OBS fica configurado sozinho: o UltraChat liga escondido quando o OBS abre, e aparecem os docks **UltraChat - Chat** e **UltraChat - Painel** (menu *Docks*);
@@ -16,7 +42,9 @@ Rode **`UltraChat-Setup.exe`** (com o OBS fechado), escolha a pasta e pronto:
 Para remover: *Configurações do Windows → Aplicativos → UltraChat para OBS → Desinstalar* (desfaz a configuração do OBS).
 As configurações originais do OBS ficam salvas com a extensão `.ultrachat-backup`.
 
-Para gerar o instalador a partir do código: `npm install`, baixe o `node.exe` para `installer\node\` e rode o Inno Setup 6 em `installer\ultrachat.iss`.
+### Gerar os instaladores a partir do código
+- **Windows:** `npm install`, baixe o `node.exe` para `installer\node\` e rode o Inno Setup 6 em `installer\ultrachat.iss`.
+- **macOS e Linux:** `npm install` e depois `node tools/build-unix.mjs` (baixa o Node oficial de cada sistema e gera os `.tar.gz` em `installer/Output`).
 
 ## Como usar (a partir do código)
 

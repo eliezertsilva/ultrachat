@@ -4,3 +4,4 @@ ultrachat.log
 installer/node/
 installer/Output/
 .claude/
+installer/node-cache/

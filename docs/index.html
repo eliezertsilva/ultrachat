@@ -154,6 +154,14 @@
   .step p { margin: 0; color: var(--muted); font-size: 15px; }
   code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: .88em; background: #0e0e14; border: 1px solid var(--line); padding: 2px 6px; border-radius: 6px; color: #e9ddff; word-break: break-all; }
 
+  .os-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .os { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: flex; flex-direction: column; gap: 6px; }
+  .os.current { border-color: rgba(167,139,250,.7); box-shadow: 0 0 0 3px rgba(124,58,237,.25); }
+  .os > svg { width: 34px; height: 34px; color: #e9ddff; }
+  .os h3 { margin: 10px 0 0; font-size: 19px; }
+  .os p { margin: 0 0 14px; color: var(--muted); font-size: 15px; flex: 1; }
+  .os .btn { justify-content: center; padding: 12px 16px; font-size: 15px; }
+  .os-btns { display: flex; flex-direction: column; gap: 8px; }
   .faq { max-width: 760px; margin: 0 auto; display: grid; gap: 12px; }
   details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; }
   summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
@@ -178,7 +186,7 @@
   @media (max-width: 900px) {
     .hero .wrap { grid-template-columns: 1fr; }
     .platforms { grid-template-columns: repeat(2, 1fr); }
-    .features, .steps { grid-template-columns: 1fr; }
+    .features, .steps, .os-grid { grid-template-columns: 1fr; }
     .nav-links a:not(.gh) { display: none; }
   }
   @media (max-width: 520px) {
@@ -212,13 +220,13 @@
       <h1>Todos os seus chats.<br><span class="grad">Uma tela só.</span></h1>
       <p class="lead">O UltraChat junta o chat do TikTok, Twitch, YouTube e Kick em um overlay bonito no OBS — e liga sozinho junto com ele.</p>
       <div class="ctas">
-        <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-Setup.exe">
+        <a class="btn primary" id="dl-main" href="#baixar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
-          Baixar para Windows
+          <span id="dl-label">Baixar o UltraChat</span>
         </a>
-        <a class="btn" href="#instalar">Como funciona</a>
+        <a class="btn" href="#baixar">Outros sistemas</a>
       </div>
-      <p class="fine">Windows 10/11 · OBS Studio 28 ou mais novo · ~27 MB</p>
+      <p class="fine">Windows · macOS · Linux · OBS Studio 28 ou mais novo</p>
     </div>
     <div class="demo" aria-label="Exemplo do overlay com mensagens de várias plataformas">
       <span class="live">AO VIVO</span>
@@ -276,7 +284,7 @@
     <div class="steps">
       <div class="step">
         <h3>Instale</h3>
-        <p>Feche o OBS, baixe o <strong>UltraChat-Setup.exe</strong> e siga o instalador.</p>
+        <p>Feche o OBS, baixe o UltraChat para o seu sistema e rode o instalador.</p>
       </div>
       <div class="step">
         <h3>Conecte seus canais</h3>
@@ -285,6 +293,41 @@
       <div class="step">
         <h3>Coloque na cena</h3>
         <p>Adicione uma Fonte de Navegador com <code>http://localhost:8787/overlay.html</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="baixar">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Baixe para o seu sistema</h2>
+      <p>Tudo incluído: não precisa instalar Node.js nem mais nada.</p>
+    </div>
+    <div class="os-grid">
+      <div class="os" data-os="win">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 5.5 10 4.5v7H3zM11 4.4 21 3v8.5H11zM3 12.5h7v7L3 18.5zM11 12.5h10V21l-10-1.4z"/></svg>
+        <h3>Windows</h3>
+        <p>Windows 10 e 11. Instalador que já configura o OBS.</p>
+        <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-Setup.exe">Baixar .exe</a>
+      </div>
+      <div class="os" data-os="mac">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.2 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>
+        <h3>macOS</h3>
+        <p>Extraia e abra <strong>Instalar UltraChat.command</strong> (botão direito → Abrir).</p>
+        <div class="os-btns">
+          <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-darwin-arm64.tar.gz">Apple Silicon (M1–M4)</a>
+          <a class="btn" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-darwin-x64.tar.gz">Intel</a>
+        </div>
+      </div>
+      <div class="os" data-os="linux">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c-2.2 0-3.6 1.9-3.6 4.6 0 1.3.3 2.3-.5 3.6-1 1.6-2.9 3.9-2.9 6.6 0 .7.1 1.3.4 1.8-.8.3-1.9.7-1.9 1.5 0 1.1 2 1 3.4 1.7 1.3.6 2.3.4 2.8-.5.3.1 1.3.2 2.3.2s2-.1 2.3-.2c.5.9 1.5 1.1 2.8.5 1.4-.7 3.4-.6 3.4-1.7 0-.8-1.1-1.2-1.9-1.5.3-.5.4-1.1.4-1.8 0-2.7-1.9-5-2.9-6.6-.8-1.3-.5-2.3-.5-3.6C15.6 3.9 14.2 2 12 2zm-1.5 4.2c.4 0 .7.5.7 1.1s-.3 1.1-.7 1.1-.7-.5-.7-1.1.3-1.1.7-1.1zm3 0c.4 0 .7.5.7 1.1s-.3 1.1-.7 1.1-.7-.5-.7-1.1.3-1.1.7-1.1zM12 9.3c.9 0 2 .5 2 .9s-1.1 1.1-2 1.1-2-.7-2-1.1 1.1-.9 2-.9z"/></svg>
+        <h3>Linux</h3>
+        <p>Extraia e rode <code>sh UltraChat/install.sh</code>. Funciona com o OBS via Flatpak.</p>
+        <div class="os-btns">
+          <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-linux-x64.tar.gz">x64 (PC comum)</a>
+          <a class="btn" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-linux-arm64.tar.gz">ARM</a>
+        </div>
       </div>
     </div>
   </div>
@@ -316,7 +359,10 @@
       </details>
       <details>
         <summary>Como desinstalo?</summary>
-        <p>Em <em>Configurações do Windows → Aplicativos → UltraChat para OBS → Desinstalar</em>. A configuração do OBS é desfeita automaticamente.</p>
+        <p><strong>Windows:</strong> <em>Configurações → Aplicativos → UltraChat para OBS → Desinstalar</em>.<br>
+        <strong>macOS:</strong> <code>sh ~/Library/Application\ Support/UltraChat/uninstall.sh</code><br>
+        <strong>Linux:</strong> <code>sh ~/.local/share/ultrachat/uninstall.sh</code><br>
+        Em todos, a configuração do OBS é desfeita automaticamente.</p>
       </details>
     </div>
   </div>
@@ -328,7 +374,7 @@
       <img src="logo.svg" alt="">
       <h2 style="margin-top: 18px">Leve o chat de todo mundo para a sua live</h2>
       <div class="ctas">
-        <a class="btn primary" href="https://github.com/eliezertsilva/ultrachat/releases/latest/download/UltraChat-Setup.exe">Baixar o UltraChat</a>
+        <a class="btn primary" href="#baixar">Baixar o UltraChat</a>
         <a class="btn" href="https://github.com/eliezertsilva/ultrachat">Ver o código</a>
       </div>
     </div>
@@ -353,6 +399,20 @@
     s.setAttribute('viewBox', '0 0 24 24');
     s.innerHTML = ICONS[s.dataset.icon];
   });
+
+  // Point the main button at the visitor's system and highlight its card.
+  (() => {
+    const ua = navigator.userAgent;
+    const base = 'https://github.com/eliezertsilva/ultrachat/releases/latest/download/';
+    let os = null, file = null, label = null;
+    if (/Windows/i.test(ua)) { os = 'win'; file = 'UltraChat-Setup.exe'; label = 'Baixar para Windows'; }
+    else if (/Mac OS X|Macintosh/i.test(ua) && !/iPhone|iPad/i.test(ua)) { os = 'mac'; file = 'UltraChat-darwin-arm64.tar.gz'; label = 'Baixar para macOS'; }
+    else if (/Linux/i.test(ua) && !/Android/i.test(ua)) { os = 'linux'; file = 'UltraChat-linux-x64.tar.gz'; label = 'Baixar para Linux'; }
+    if (!os) return;
+    document.getElementById('dl-main').href = base + file;
+    document.getElementById('dl-label').textContent = label;
+    document.querySelector(`.os[data-os="${os}"]`)?.classList.add('current');
+  })();
 
   const COLORS = { tiktok: '#FE2C55', twitch: '#9146FF', youtube: '#FF0033', kick: '#53FC18' };
   const SCRIPT = [
