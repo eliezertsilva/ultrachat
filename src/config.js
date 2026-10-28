@@ -7,7 +7,7 @@ export const CONFIG_PATH = path.join(ROOT, 'config.json');
 
 export const DEFAULT_CONFIG = {
   port: 8787,
-  twitch: { enabled: false, channel: '' },
+  twitch: { enabled: false, channel: '', clientId: '' },
   tiktok: {
     enabled: false,
     username: '',
@@ -42,6 +42,12 @@ export const DEFAULT_CONFIG = {
       { name: 'Elite', min: 10000 },
       { name: 'Lenda', min: 50000 },
     ],
+  },
+  alerts: {
+    enabled: true,
+    // { id, enabled, name, platform, event, gift, min, max, media, sound, volume,
+    //   text, duration, position, fontSize, color, mediaSize, cooldown, combo }
+    rules: [],
   },
   overlay: {
     theme: 'bubble', // bubble | clean | compact

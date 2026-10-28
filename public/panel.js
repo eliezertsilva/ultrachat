@@ -6,6 +6,7 @@
     dockUrl: `${base}/overlay.html?dock=1`,
     panelUrl: `${base}/`,
     topUrl: `${base}/top.html`,
+    alertsUrl: `${base}/alerts.html`,
   };
   for (const [id, url] of Object.entries(urls)) document.getElementById(id).textContent = url;
   document.getElementById('preview').src = urls.overlayUrl;
@@ -17,8 +18,10 @@
       urls.overlayUrl = url;
       document.getElementById('overlayUrl').textContent = url;
       if (url.includes('%2Foverlay.html')) {
-        urls.topUrl = url.replace('%2Foverlay.html', '%2Ftop.html');
-        document.getElementById('topUrl').textContent = urls.topUrl;
+        for (const page of ['top', 'alerts']) {
+          urls[`${page}Url`] = url.replace('%2Foverlay.html', `%2F${page}.html`);
+          document.getElementById(`${page}Url`).textContent = urls[`${page}Url`];
+        }
       }
     })
     .catch(() => {});
@@ -62,6 +65,7 @@
       else input.value = v ?? '';
     }
     ranksBox.value = (cfg.loyalty?.ranks || []).map((r) => `${r.name} = ${r.min}`).join('\n');
+    AlertsEditor.load(cfg.alerts?.rules);
     updateOutputs();
   }
 
@@ -76,6 +80,7 @@
       set(cfg, input.name, v);
     }
     cfg.loyalty.ranks = parseRanks(ranksBox.value);
+    cfg.alerts.rules = AlertsEditor.read();
     return cfg;
   }
 
@@ -203,6 +208,7 @@
       const data = JSON.parse(ev.data);
       if (data.status) showStatus(data.status);
       if (data.type === 'leaderboard') loadBoard();
+      if (data.type === 'twitchAuth') showTwitchAuth(data.auth);
     };
     ws.onclose = () => {
       pill.textContent = 'servidor desligado';
@@ -211,11 +217,70 @@
     };
   }
 
+  // ---------- pages (menu on the left) ----------
+  const PAGES = [...document.querySelectorAll('.page')].map((p) => p.dataset.page);
+  function showPage() {
+    const page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'inicio';
+    document.querySelectorAll('.page').forEach((p) => (p.hidden = p.dataset.page !== page));
+    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('active', a.dataset.nav === page));
+    document.querySelector('.content').scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', showPage);
+  showPage();
+
+  // ---------- Twitch login (device code: the user types a code on twitch.tv/activate) ----------
+  const tw = {
+    text: document.getElementById('twitchAuthText'),
+    code: document.getElementById('twitchCode'),
+    codeValue: document.getElementById('twitchCodeValue'),
+    codeLink: document.getElementById('twitchCodeLink'),
+    connect: document.getElementById('twitchConnect'),
+    disconnect: document.getElementById('twitchDisconnect'),
+  };
+  let twPoll = null;
+
+  function showTwitchAuth(s) {
+    tw.code.hidden = s.state !== 'pending';
+    tw.connect.hidden = s.state === 'connected' || s.state === 'pending';
+    tw.disconnect.hidden = s.state !== 'connected';
+    tw.disconnect.textContent = 'Desconectar';
+    tw.text.className = s.state === 'connected' ? 'ok' : 'muted';
+    if (s.state === 'connected') tw.text.textContent = `Conectada: ${s.login}${s.detail ? ' · ' + s.detail : ''}`;
+    else if (s.state === 'pending') {
+      tw.text.textContent = 'Esperando você autorizar…';
+      tw.codeValue.textContent = s.userCode;
+      tw.codeLink.href = s.verificationUri || 'https://www.twitch.tv/activate';
+    } else tw.text.textContent = s.error || 'Não conectada';
+    clearInterval(twPoll);
+    if (s.state === 'pending') twPoll = setInterval(refreshTwitchAuth, 3000);
+  }
+
+  async function refreshTwitchAuth() {
+    showTwitchAuth(await api('/api/twitch/auth'));
+  }
+
+  tw.connect.onclick = async () => {
+    tw.connect.disabled = true;
+    await save(); // uses the Client ID typed in the panel
+    const s = await api('/api/twitch/auth/start', {});
+    tw.connect.disabled = false;
+    showTwitchAuth(s);
+    if (s.state === 'pending') window.open(s.verificationUri, '_blank', 'noopener');
+  };
+  tw.disconnect.onclick = async () => {
+    if (!confirm('Desconectar a conta da Twitch?')) return;
+    showTwitchAuth(await api('/api/twitch/auth/logout', {}));
+  };
+
+  api('/api/info').then((i) => (document.getElementById('version').textContent = `v${i.version}`)).catch(() => {});
   api('/api/config').then((cfg) => {
     current = cfg;
     fill(cfg);
   });
+  refreshTwitchAuth().catch(() => {});
   showStatus({});
+  AlertsEditor.init({ save });
   loadBoard();
   connectWs();
 })();

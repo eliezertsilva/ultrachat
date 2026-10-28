@@ -15,6 +15,9 @@ if [ -x "$DIR/node/bin/node" ]; then
   "$DIR/node/bin/node" "$DIR/tools/configure-obs.js" uninstall
 fi
 
+rm -rf "$HOME/Applications/UltraChat.app" 2>/dev/null
+rm -f "$HOME/.local/share/applications/ultrachat.desktop" 2>/dev/null
+
 # Safety: only delete a folder that really is an UltraChat install.
 if [ -f "$DIR/obs-ultrachat.lua" ] && [ -f "$DIR/src/server.js" ]; then
   rm -rf "$DIR"

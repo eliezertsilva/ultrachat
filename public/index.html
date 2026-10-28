@@ -3,275 +3,378 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>UltraChat — Painel</title>
+  <title>UltraChat</title>
   <link rel="stylesheet" href="panel.css">
   <link rel="icon" href="logo.svg" type="image/svg+xml">
 </head>
 <body>
-  <header>
+<form id="form" class="app" autocomplete="off">
+  <aside class="side">
     <div class="brand">
-      <img class="logo" src="logo.svg" alt="" width="36" height="36">
+      <img class="logo" src="logo.svg" alt="" width="34" height="34">
       <div>
-        <h1>UltraChat para OBS</h1>
-        <p class="sub">TikTok + Twitch + YouTube + Kick num chat só</p>
+        <strong>UltraChat</strong>
+        <small id="version"></small>
       </div>
     </div>
-    <span id="conn" class="pill off">conectando…</span>
-  </header>
+    <nav class="nav" aria-label="Seções">
+      <a href="#inicio" data-nav="inicio"><span class="ni">🏠</span><span>Início</span></a>
+      <a href="#conexoes" data-nav="conexoes"><span class="ni">🔌</span><span>Conexões</span></a>
+      <a href="#chat" data-nav="chat"><span class="ni">💬</span><span>Chat</span></a>
+      <a href="#pontos" data-nav="pontos"><span class="ni">🏆</span><span>Pontos</span></a>
+      <a href="#alertas" data-nav="alertas"><span class="ni">🔔</span><span>Alertas</span></a>
+    </nav>
+    <div class="side-foot">
+      <span id="conn" class="pill off">conectando…</span>
+    </div>
+  </aside>
 
-  <main>
-    <section class="card">
-      <h2>1. Links para o OBS</h2>
-      <div class="link-row">
-        <div>
-          <strong>Overlay da live</strong>
-          <small>OBS → Fontes → + → <em>Navegador</em> → cole este URL (ex.: 400×600)</small>
-        </div>
-        <code id="overlayUrl"></code>
-        <button type="button" class="ghost" data-copy="overlayUrl">Copiar</button>
+  <main class="content">
+    <!-- ================= INÍCIO ================= -->
+    <section class="page" data-page="inicio">
+      <header class="page-head">
+        <h1>Olá! 👋</h1>
+        <p>Veja como estão suas plataformas e copie os links para colocar no OBS.</p>
+      </header>
+
+      <div class="tiles">
+        <a class="tile" href="#conexoes" data-tile="tiktok"><span class="p-icon" data-icon="tiktok"></span><span><strong>TikTok</strong><small class="status" data-status="tiktok"></small></span></a>
+        <a class="tile" href="#conexoes" data-tile="twitch"><span class="p-icon" data-icon="twitch"></span><span><strong>Twitch</strong><small class="status" data-status="twitch"></small></span></a>
+        <a class="tile" href="#conexoes" data-tile="youtube"><span class="p-icon" data-icon="youtube"></span><span><strong>YouTube</strong><small class="status" data-status="youtube"></small></span></a>
+        <a class="tile" href="#conexoes" data-tile="kick"><span class="p-icon" data-icon="kick"></span><span><strong>Kick</strong><small class="status" data-status="kick"></small></span></a>
       </div>
-      <div class="link-row">
-        <div>
-          <strong>Chat para você ler (Dock)</strong>
-          <small>OBS → Docks → <em>Docks de navegador personalizados</em></small>
+
+      <section class="card">
+        <h2>Links para o OBS</h2>
+        <p class="muted">No OBS: Fontes → <strong>+</strong> → <em>Navegador</em> → cole o link.</p>
+        <div class="link-row">
+          <div><strong>Chat da live</strong><small>Ex.: 400×600</small></div>
+          <code id="overlayUrl"></code>
+          <button type="button" class="ghost" data-copy="overlayUrl">Copiar</button>
         </div>
-        <code id="dockUrl"></code>
-        <button type="button" class="ghost" data-copy="dockUrl">Copiar</button>
-      </div>
-      <div class="link-row">
-        <div>
-          <strong>Este painel (Dock)</strong>
-          <small>Também dá para colocar o painel dentro do OBS</small>
+        <div class="link-row">
+          <div><strong>Alertas</strong><small>Tamanho da tela (1920×1080). Marque “Controlar áudio via OBS”.</small></div>
+          <code id="alertsUrl"></code>
+          <button type="button" class="ghost" data-copy="alertsUrl">Copiar</button>
         </div>
-        <code id="panelUrl"></code>
-        <button type="button" class="ghost" data-copy="panelUrl">Copiar</button>
-      </div>
-      <div class="link-row">
-        <div>
-          <strong>Ranking (Top 5)</strong>
-          <small>Fonte de Navegador com os 5 que têm mais pontos (ex.: 360×420)</small>
+        <div class="link-row">
+          <div><strong>Ranking (Top 5)</strong><small>Ex.: 360×420</small></div>
+          <code id="topUrl"></code>
+          <button type="button" class="ghost" data-copy="topUrl">Copiar</button>
         </div>
-        <code id="topUrl"></code>
-        <button type="button" class="ghost" data-copy="topUrl">Copiar</button>
+        <div class="link-row">
+          <div><strong>Chat para você ler (Dock)</strong><small>OBS → Docks → <em>Docks de navegador personalizados</em></small></div>
+          <code id="dockUrl"></code>
+          <button type="button" class="ghost" data-copy="dockUrl">Copiar</button>
+        </div>
+        <div class="link-row">
+          <div><strong>Este painel (Dock)</strong><small>Para configurar de dentro do OBS</small></div>
+          <code id="panelUrl"></code>
+          <button type="button" class="ghost" data-copy="panelUrl">Copiar</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ================= CONEXÕES ================= -->
+    <section class="page" data-page="conexoes" hidden>
+      <header class="page-head">
+        <h1>Conexões</h1>
+        <p>Ligue as plataformas da sua live. Nenhuma precisa de senha para o chat; o login da Twitch é opcional e libera recursos extras.</p>
+      </header>
+
+      <div class="platforms">
+        <div class="platform" data-p="tiktok">
+          <div class="p-head">
+            <span class="p-icon" data-icon="tiktok"></span>
+            <h3>TikTok</h3>
+            <label class="switch"><input type="checkbox" name="tiktok.enabled"><span></span></label>
+          </div>
+          <label>Usuário (@)
+            <input name="tiktok.username" placeholder="@seuusuario">
+          </label>
+          <div class="checks">
+            <label><input type="checkbox" name="tiktok.showGifts"> Presentes no chat</label>
+            <label><input type="checkbox" name="tiktok.showFollows"> Seguidores no chat</label>
+            <label><input type="checkbox" name="tiktok.showShares"> Compartilhamentos</label>
+            <label><input type="checkbox" name="tiktok.showJoins"> Entradas na live</label>
+          </div>
+          <details>
+            <summary>Avançado</summary>
+            <label>API key do Euler Stream (opcional)
+              <input name="tiktok.signApiKey" type="password" placeholder="deixe vazio se estiver funcionando">
+            </label>
+            <small>Só é necessária se aparecer erro de limite (rate limit). Grátis em eulerstream.com.</small>
+          </details>
+          <p class="status" data-status="tiktok"></p>
+          <p class="login-note">Login: o TikTok não tem login oficial para lives. Tudo funciona só com o @.</p>
+        </div>
+
+        <div class="platform" data-p="twitch">
+          <div class="p-head">
+            <span class="p-icon" data-icon="twitch"></span>
+            <h3>Twitch</h3>
+            <label class="switch"><input type="checkbox" name="twitch.enabled"><span></span></label>
+          </div>
+          <label>Canal
+            <input name="twitch.channel" placeholder="seucanal">
+          </label>
+          <small>O chat, subs, bits e raids funcionam sem login.</small>
+          <p class="status" data-status="twitch"></p>
+
+          <div class="login-box" id="twitchAuth">
+            <div class="login-state">
+              <strong>Conta da Twitch</strong>
+              <span id="twitchAuthText" class="muted">Não conectada</span>
+            </div>
+            <div id="twitchCode" class="login-code" hidden>
+              <span>Abra <a id="twitchCodeLink" href="https://www.twitch.tv/activate" target="_blank" rel="noopener">twitch.tv/activate</a> e digite:</span>
+              <code id="twitchCodeValue"></code>
+            </div>
+            <div class="login-actions">
+              <button type="button" id="twitchConnect" class="twitch-btn">Conectar conta da Twitch</button>
+              <button type="button" id="twitchDisconnect" class="ghost" hidden>Desconectar</button>
+            </div>
+            <small>Libera: <strong>alerta de novo seguidor</strong>. Use a conta do canal (ou de um moderador dele). O UltraChat nunca vê sua senha.</small>
+            <details>
+              <summary>Client ID (avançado)</summary>
+              <label>Client ID do app na Twitch
+                <input name="twitch.clientId" placeholder="vazio = o do UltraChat">
+              </label>
+              <small>Só mude se você registrou seu próprio app em dev.twitch.tv (tipo <em>Público</em>).</small>
+            </details>
+          </div>
+        </div>
+
+        <div class="platform" data-p="youtube">
+          <div class="p-head">
+            <span class="p-icon" data-icon="youtube"></span>
+            <h3>YouTube</h3>
+            <label class="switch"><input type="checkbox" name="youtube.enabled"><span></span></label>
+          </div>
+          <label>Canal (@) ou link da live
+            <input name="youtube.channel" placeholder="@seucanal ou https://youtube.com/watch?v=…">
+          </label>
+          <small>Com o @, a live atual é encontrada sozinha. Super Chats e membros aparecem destacados.</small>
+          <p class="status" data-status="youtube"></p>
+          <p class="login-note">Login: não precisa. O YouTube não avisa novos inscritos durante a live para nenhum programa.</p>
+        </div>
+
+        <div class="platform" data-p="kick">
+          <div class="p-head">
+            <span class="p-icon" data-icon="kick"></span>
+            <h3>Kick</h3>
+            <label class="switch"><input type="checkbox" name="kick.enabled"><span></span></label>
+          </div>
+          <label>Canal
+            <input name="kick.channel" placeholder="seucanal">
+          </label>
+          <details>
+            <summary>Chatroom ID (se a busca automática falhar)</summary>
+            <label>Chatroom ID
+              <input name="kick.chatroomId" placeholder="ex.: 123456" inputmode="numeric">
+            </label>
+            <small>Abra <code>kick.com/api/v2/channels/SEUCANAL</code> no navegador e copie o número de <code>"chatroom":{"id":…</code></small>
+            <label>Pusher key (só se a Kick trocar a chave de novo)
+              <input name="kick.pusherKey" placeholder="vazio = padrão">
+            </label>
+          </details>
+          <p class="status" data-status="kick"></p>
+          <p class="login-note">Login: em breve. Por enquanto chat, subs e subs de presente funcionam sem login.</p>
+        </div>
       </div>
     </section>
 
-    <form id="form">
-      <section class="card">
-        <h2>2. Plataformas</h2>
-        <div class="platforms">
-          <div class="platform" data-p="tiktok">
-            <div class="p-head">
-              <span class="p-icon" data-icon="tiktok"></span>
-              <h3>TikTok</h3>
-              <label class="switch"><input type="checkbox" name="tiktok.enabled"><span></span></label>
-            </div>
-            <label>Usuário (@)
-              <input name="tiktok.username" placeholder="@seuusuario" autocomplete="off">
+    <!-- ================= CHAT ================= -->
+    <section class="page" data-page="chat" hidden>
+      <header class="page-head">
+        <h1>Chat</h1>
+        <p>Aparência do chat na live e o que filtrar. As mudanças de aparência aparecem na hora.</p>
+      </header>
+
+      <div class="two-col">
+        <section class="card">
+          <h2>Aparência</h2>
+          <div class="grid">
+            <label>Estilo
+              <select name="overlay.theme">
+                <option value="bubble">Balões</option>
+                <option value="clean">Só texto (sem fundo)</option>
+                <option value="compact">Compacto (1 linha)</option>
+              </select>
             </label>
-            <div class="checks">
-              <label><input type="checkbox" name="tiktok.showGifts"> Presentes</label>
-              <label><input type="checkbox" name="tiktok.showFollows"> Novos seguidores</label>
-              <label><input type="checkbox" name="tiktok.showShares"> Compartilhamentos</label>
-              <label><input type="checkbox" name="tiktok.showJoins"> Entradas na live</label>
-            </div>
-            <details>
-              <summary>Avançado</summary>
-              <label>API key do Euler Stream (opcional)
-                <input name="tiktok.signApiKey" type="password" placeholder="deixe vazio se estiver funcionando" autocomplete="off">
-              </label>
-              <small>Só é necessária se aparecer erro de limite (rate limit). Grátis em eulerstream.com.</small>
-            </details>
-            <p class="status" data-status="tiktok"></p>
+            <label>Alinhamento
+              <select name="overlay.align">
+                <option value="left">Esquerda</option>
+                <option value="right">Direita</option>
+              </select>
+            </label>
+            <label>Tamanho da fonte <output data-for="overlay.fontSize"></output>
+              <input type="range" name="overlay.fontSize" min="10" max="48" step="1">
+            </label>
+            <label>Opacidade do fundo <output data-for="overlay.bgOpacity"></output>
+              <input type="range" name="overlay.bgOpacity" min="0" max="1" step="0.05">
+            </label>
+            <label>Máximo de mensagens na tela
+              <input type="number" name="overlay.maxMessages" min="1" max="200">
+            </label>
+            <label>Sumir após (s, 0 = nunca)
+              <input type="number" name="overlay.hideAfter" min="0" max="3600">
+            </label>
+          </div>
+          <div class="checks">
+            <label><input type="checkbox" name="overlay.showAvatars"> Foto do perfil</label>
+            <label><input type="checkbox" name="overlay.showPlatformIcon"> Ícone da plataforma</label>
+            <label><input type="checkbox" name="overlay.showBadges"> Selos (MOD, SUB…)</label>
+            <label><input type="checkbox" name="overlay.animation"> Animações</label>
           </div>
 
-          <div class="platform" data-p="twitch">
-            <div class="p-head">
-              <span class="p-icon" data-icon="twitch"></span>
-              <h3>Twitch</h3>
-              <label class="switch"><input type="checkbox" name="twitch.enabled"><span></span></label>
-            </div>
-            <label>Canal
-              <input name="twitch.channel" placeholder="seucanal" autocomplete="off">
-            </label>
-            <small>Não precisa de login. Subs, bits e raids aparecem destacados.</small>
-            <p class="status" data-status="twitch"></p>
+          <h2 class="sub-h">Filtros</h2>
+          <div class="checks">
+            <label><input type="checkbox" name="filters.hideCommands"> Esconder comandos (mensagens que começam com “!”)</label>
           </div>
+          <label>Usuários bloqueados (separados por vírgula)
+            <input name="filters.blockedUsers" placeholder="nightbot, streamelements">
+          </label>
+          <small class="hint">Usuários bloqueados também não ganham pontos, não usam comandos e não disparam alertas.</small>
+        </section>
 
-          <div class="platform" data-p="youtube">
-            <div class="p-head">
-              <span class="p-icon" data-icon="youtube"></span>
-              <h3>YouTube</h3>
-              <label class="switch"><input type="checkbox" name="youtube.enabled"><span></span></label>
-            </div>
-            <label>Canal (@) ou link da live
-              <input name="youtube.channel" placeholder="@seucanal ou https://youtube.com/watch?v=…" autocomplete="off">
-            </label>
-            <small>Com o @, a live atual é encontrada sozinha. Super Chats aparecem destacados.</small>
-            <p class="status" data-status="youtube"></p>
+        <section class="card preview-card">
+          <div class="card-head">
+            <h2>Prévia</h2>
+            <button type="button" id="testBtn" class="ghost">Mensagens de teste</button>
+            <button type="button" id="clearBtn" class="ghost">Limpar</button>
           </div>
+          <div class="preview"><iframe id="preview" title="Prévia do overlay"></iframe></div>
+        </section>
+      </div>
+    </section>
 
-          <div class="platform" data-p="kick">
-            <div class="p-head">
-              <span class="p-icon" data-icon="kick"></span>
-              <h3>Kick</h3>
-              <label class="switch"><input type="checkbox" name="kick.enabled"><span></span></label>
-            </div>
-            <label>Canal
-              <input name="kick.channel" placeholder="seucanal" autocomplete="off">
-            </label>
-            <details>
-              <summary>Chatroom ID (se a busca automática falhar)</summary>
-              <label>Chatroom ID
-                <input name="kick.chatroomId" placeholder="ex.: 123456" autocomplete="off" inputmode="numeric">
-              </label>
-              <small>Abra <code>kick.com/api/v2/channels/SEUCANAL</code> no navegador e copie o número de <code>"chatroom":{"id":…</code></small>
-              <label>Pusher key (só se a Kick trocar a chave de novo)
-                <input name="kick.pusherKey" placeholder="vazio = padrão" autocomplete="off">
-              </label>
-            </details>
-            <p class="status" data-status="kick"></p>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>3. Aparência</h2>
-        <div class="grid">
-          <label>Estilo
-            <select name="overlay.theme">
-              <option value="bubble">Balões</option>
-              <option value="clean">Só texto (sem fundo)</option>
-              <option value="compact">Compacto (1 linha)</option>
-            </select>
-          </label>
-          <label>Alinhamento
-            <select name="overlay.align">
-              <option value="left">Esquerda</option>
-              <option value="right">Direita</option>
-            </select>
-          </label>
-          <label>Tamanho da fonte <output data-for="overlay.fontSize"></output>
-            <input type="range" name="overlay.fontSize" min="10" max="48" step="1">
-          </label>
-          <label>Opacidade do fundo <output data-for="overlay.bgOpacity"></output>
-            <input type="range" name="overlay.bgOpacity" min="0" max="1" step="0.05">
-          </label>
-          <label>Máximo de mensagens na tela
-            <input type="number" name="overlay.maxMessages" min="1" max="200">
-          </label>
-          <label>Sumir após (segundos, 0 = nunca)
-            <input type="number" name="overlay.hideAfter" min="0" max="3600">
-          </label>
-        </div>
-        <div class="checks">
-          <label><input type="checkbox" name="overlay.showAvatars"> Foto do perfil</label>
-          <label><input type="checkbox" name="overlay.showPlatformIcon"> Ícone da plataforma</label>
-          <label><input type="checkbox" name="overlay.showBadges"> Selos (MOD, SUB…)</label>
-          <label><input type="checkbox" name="overlay.animation"> Animações</label>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>4. Filtros</h2>
-        <div class="checks">
-          <label><input type="checkbox" name="filters.hideCommands"> Esconder comandos (mensagens que começam com “!”)</label>
-        </div>
-        <label>Usuários bloqueados (separados por vírgula)
-          <input name="filters.blockedUsers" placeholder="nightbot, streamelements" autocomplete="off">
-        </label>
-        <small>Usuários bloqueados também não ganham pontos nem usam comandos.</small>
-      </section>
-
-      <section class="card">
-        <div class="card-head">
-          <h2>5. Pontos e ranks</h2>
+    <!-- ================= PONTOS ================= -->
+    <section class="page" data-page="pontos" hidden>
+      <header class="page-head">
+        <div class="page-title">
+          <h1>Pontos e ranks</h1>
           <label class="switch" title="Ligar/desligar pontos e comandos"><input type="checkbox" name="loyalty.enabled"><span></span></label>
         </div>
-        <div class="grid">
-          <label>Pontos por mensagem
-            <input type="number" name="loyalty.pointsPerMessage" min="0">
-          </label>
-          <label>Intervalo entre mensagens que pontuam (s)
-            <input type="number" name="loyalty.messageCooldown" min="0" max="3600">
-          </label>
-          <label>Pontos por follow (TikTok)
-            <input type="number" name="loyalty.pointsPerFollow" min="0">
-          </label>
-          <label>Pontos por sub / membro
-            <input type="number" name="loyalty.pointsPerSub" min="0">
-          </label>
-          <label>Pontos por diamante (TikTok)
-            <input type="number" name="loyalty.pointsPerDiamond" min="0">
-          </label>
-          <label>Pontos por bit (Twitch)
-            <input type="number" name="loyalty.pointsPerBit" min="0">
-          </label>
-          <label>Pontos por unidade de Super Chat (YouTube)
-            <input type="number" name="loyalty.pointsPerSuperChat" min="0">
-          </label>
-        </div>
-        <small class="hint">Cada pessoa é contada por plataforma (quem está no TikTok e na Twitch aparece duas vezes). Follow só pontua uma vez por pessoa. Super Chat usa o valor na moeda de quem enviou.</small>
+        <p>Quem participa ganha pontos e sobe de rank. Comandos <code>!pontos</code>, <code>!rank</code> e <code>!top</code> respondem no overlay.</p>
+      </header>
 
-        <h3 class="sub-h">Ranks</h3>
-        <div class="grid">
+      <div class="two-col">
+        <section class="card">
+          <h2>Quanto vale cada coisa</h2>
+          <div class="grid">
+            <label>Por mensagem
+              <input type="number" name="loyalty.pointsPerMessage" min="0">
+            </label>
+            <label>Intervalo entre mensagens que pontuam (s)
+              <input type="number" name="loyalty.messageCooldown" min="0" max="3600">
+            </label>
+            <label>Por follow (TikTok)
+              <input type="number" name="loyalty.pointsPerFollow" min="0">
+            </label>
+            <label>Por sub / membro
+              <input type="number" name="loyalty.pointsPerSub" min="0">
+            </label>
+            <label>Por diamante (TikTok)
+              <input type="number" name="loyalty.pointsPerDiamond" min="0">
+            </label>
+            <label>Por bit (Twitch)
+              <input type="number" name="loyalty.pointsPerBit" min="0">
+            </label>
+            <label>Por unidade de Super Chat (YouTube)
+              <input type="number" name="loyalty.pointsPerSuperChat" min="0">
+            </label>
+          </div>
+          <small class="hint">Cada pessoa é contada por plataforma. Follow só pontua uma vez por pessoa. Super Chat usa o valor na moeda de quem enviou.</small>
+
+          <h2 class="sub-h">Ranks</h2>
           <label>Um por linha: <em>Nome = pontos mínimos</em>
             <textarea id="ranks" rows="6" spellcheck="false" placeholder="Novato = 0&#10;Frequente = 500"></textarea>
           </label>
-          <div class="grid one">
-            <label>Comando de pontos
-              <input name="loyalty.commands.points" placeholder="!pontos" autocomplete="off">
+
+          <h2 class="sub-h">Comandos</h2>
+          <div class="grid">
+            <label>Pontos
+              <input name="loyalty.commands.points" placeholder="!pontos">
             </label>
-            <label>Comando de rank
-              <input name="loyalty.commands.rank" placeholder="!rank" autocomplete="off">
+            <label>Rank
+              <input name="loyalty.commands.rank" placeholder="!rank">
             </label>
-            <label>Comando do top 5
-              <input name="loyalty.commands.top" placeholder="!top" autocomplete="off">
+            <label>Top 5
+              <input name="loyalty.commands.top" placeholder="!top">
             </label>
-          </div>
-          <div class="grid one">
             <label>Nome do bot no overlay
-              <input name="loyalty.botName" placeholder="UltraChat" autocomplete="off">
+              <input name="loyalty.botName" placeholder="UltraChat">
             </label>
-            <label>Intervalo entre comandos, por pessoa (s)
+            <label>Intervalo por pessoa (s)
               <input type="number" name="loyalty.commandCooldown" min="0" max="600">
             </label>
           </div>
+          <small class="hint">Separe apelidos com vírgula (ex.: <code>!pontos, !points</code>). Funcionam mesmo com “Esconder comandos” ligado.</small>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Ranking</h2>
+            <button type="button" id="resetPointsBtn" class="ghost danger">Zerar pontos</button>
+          </div>
+          <p id="boardStats" class="muted"></p>
+          <div class="board-wrap">
+            <table class="board">
+              <thead><tr><th>#</th><th>Pessoa</th><th>Rank</th><th class="num">Pontos</th></tr></thead>
+              <tbody id="board"></tbody>
+            </table>
+          </div>
+          <p id="boardEmpty" class="muted">Ninguém tem pontos ainda. Eles aparecem aqui conforme o chat conversa.</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- ================= ALERTAS ================= -->
+    <section class="page" data-page="alertas" hidden>
+      <header class="page-head">
+        <div class="page-title">
+          <h1>Alertas</h1>
+          <label class="switch" title="Ligar/desligar todos os alertas"><input type="checkbox" name="alerts.enabled"><span></span></label>
         </div>
-        <small class="hint">Separe apelidos com vírgula (ex.: <code>!pontos, !points</code>). A resposta aparece só no overlay, não no chat da plataforma. Os comandos funcionam mesmo com “Esconder comandos” ligado.</small>
+        <p>Cada alerta diz <em>quando</em> (plataforma + evento) e <em>o que mostrar</em>. Eles entram numa fila e nunca aparecem um em cima do outro. Se mais de um servir, vale o mais específico.</p>
+      </header>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Seus alertas</h2>
+          <button type="button" id="addAlert" class="primary-soft">+ Adicionar alerta</button>
+        </div>
+        <div id="alertRules" class="rules"></div>
+        <p id="alertsEmpty" class="muted">Nenhum alerta ainda. Clique em “Adicionar alerta”.</p>
+        <small class="hint" id="alertsTwitchHint">Para alertar novos seguidores da Twitch, conecte sua conta em <a href="#conexoes">Conexões</a>. Inscritos do YouTube não são avisados pela plataforma.</small>
       </section>
 
-      <div class="actions">
-        <button type="submit" class="primary">Salvar e aplicar</button>
-        <button type="button" id="testBtn">Enviar mensagens de teste</button>
-        <button type="button" id="clearBtn" class="ghost">Limpar overlay</button>
-        <button type="button" id="reconnectBtn" class="ghost">Reconectar tudo</button>
-        <span id="saved" class="saved" hidden>Salvo ✓</span>
-      </div>
-    </form>
-
-    <section class="card">
-      <div class="card-head">
-        <h2>Ranking</h2>
-        <span id="boardStats" class="muted"></span>
-        <button type="button" id="resetPointsBtn" class="ghost danger">Zerar pontos</button>
-      </div>
-      <div class="board-wrap">
-        <table class="board">
-          <thead><tr><th>#</th><th>Pessoa</th><th>Rank</th><th class="num">Pontos</th></tr></thead>
-          <tbody id="board"></tbody>
-        </table>
-      </div>
-      <p id="boardEmpty" class="muted">Ninguém tem pontos ainda. Eles aparecem aqui conforme o chat conversa.</p>
+      <section class="card">
+        <h2>Mídias</h2>
+        <div class="media-actions">
+          <label class="upload">
+            <input type="file" id="mediaUpload" multiple accept="video/*,image/*,audio/*">
+            <span>⬆ Enviar vídeo, GIF, imagem ou som</span>
+          </label>
+          <span id="uploadStatus" class="muted"></span>
+        </div>
+        <div id="mediaList" class="media-list"></div>
+        <p id="mediaEmpty" class="muted">Nenhuma mídia enviada. Formatos: mp4, webm, gif, png, jpg, webp, mp3, wav, ogg.</p>
+        <datalist id="giftList"></datalist>
+      </section>
     </section>
 
-    <section class="card">
-      <h2>Prévia</h2>
-      <div class="preview"><iframe id="preview" title="Prévia do overlay"></iframe></div>
-    </section>
+    <div class="actions">
+      <button type="submit" class="primary">Salvar</button>
+      <button type="button" id="reconnectBtn" class="ghost">Reconectar plataformas</button>
+      <span id="saved" class="saved" hidden>Salvo ✓</span>
+    </div>
   </main>
+</form>
 
   <script src="common.js"></script>
+  <script src="panel-alerts.js"></script>
   <script src="panel.js"></script>
 </body>
 </html>

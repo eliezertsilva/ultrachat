@@ -142,13 +142,22 @@ export class KickConnector extends BaseConnector {
       if (data?.message?.id) this.hub.deleteMessage('kick', data.message.id);
     } else if (msg.event === 'App\\Events\\SubscriptionEvent') {
       const name = data.username || 'Kick';
-      this.publish({ type: 'sub', user: { name, login: name.toLowerCase() }, highlight: 'se inscreveu!', parts: [] });
+      this.publish({
+        type: 'sub',
+        kind: 'sub',
+        months: Number(data.months) || undefined,
+        user: { name, login: name.toLowerCase() },
+        highlight: 'se inscreveu!',
+        parts: [],
+      });
     } else if (msg.event === 'App\\Events\\GiftedSubscriptionsEvent') {
       const n = data.gifted_usernames?.length || 1;
       const name = data.gifter_username || 'Kick';
       this.publish({
         type: 'sub',
+        kind: 'subgift',
         subCount: n,
+        giftCount: n,
         user: { name, login: name.toLowerCase() },
         highlight: `presenteou ${n} sub(s)!`,
         parts: [],

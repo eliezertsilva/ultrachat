@@ -9,3 +9,7 @@ diagnostico/
 loyalty.json
 loyalty.json.tmp
 loyalty.corrompido-*.json
+media/
+gifts.json
+.app-profile/
+auth.json

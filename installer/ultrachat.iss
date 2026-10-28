@@ -29,7 +29,7 @@ Name: "ptbr"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
 [Tasks]
 Name: "configobs"; Description: "Configurar o OBS automaticamente (liga junto com o OBS + docks do chat e do painel)"
-Name: "desktopicon"; Description: "Atalho do painel na área de trabalho"; Flags: unchecked
+Name: "desktopicon"; Description: "Atalho do UltraChat na área de trabalho"
 
 [Files]
 Source: "{#Src}\src\*"; DestDir: "{app}\src"; Flags: recursesubdirs ignoreversion
@@ -40,20 +40,19 @@ Source: "{#Src}\installer\node\node.exe"; DestDir: "{app}\node"; Flags: ignoreve
 Source: "{#Src}\package.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Src}\obs-ultrachat.lua"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Src}\iniciar-oculto.vbs"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#Src}\abrir-ultrachat.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Src}\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Src}\dock-loader.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Src}\assets\logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\Iniciar UltraChat"; Filename: "wscript.exe"; Parameters: """{app}\iniciar-oculto.vbs"""
-Name: "{group}\Painel do UltraChat"; Filename: "http://localhost:8787/"
+Name: "{group}\UltraChat"; Filename: "wscript.exe"; Parameters: """{app}\abrir-ultrachat.vbs"""; IconFilename: "{app}\logo.ico"; Comment: "Configurar o UltraChat"
 Name: "{group}\Desinstalar UltraChat"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Painel do UltraChat"; Filename: "http://localhost:8787/"; Tasks: desktopicon
+Name: "{autodesktop}\UltraChat"; Filename: "wscript.exe"; Parameters: """{app}\abrir-ultrachat.vbs"""; IconFilename: "{app}\logo.ico"; Comment: "Configurar o UltraChat"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\node\node.exe"; Parameters: """{app}\tools\configure-obs.js"" install"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; Tasks: configobs; StatusMsg: "Configurando o OBS..."
-Filename: "wscript.exe"; Parameters: """{app}\iniciar-oculto.vbs"""; Flags: nowait postinstall skipifsilent; Description: "Iniciar o UltraChat agora e abrir o painel"
-Filename: "http://localhost:8787/"; Flags: shellexec nowait postinstall skipifsilent; Description: "Abrir o painel de configuração"
+Filename: "wscript.exe"; Parameters: """{app}\abrir-ultrachat.vbs"""; Flags: nowait postinstall skipifsilent; Description: "Abrir o UltraChat agora"
 
 [UninstallRun]
 Filename: "curl.exe"; Parameters: "-s -X POST http://127.0.0.1:8787/api/shutdown"; Flags: runhidden waituntilterminated; RunOnceId: "StopServer"
@@ -63,12 +62,19 @@ Filename: "{app}\node\node.exe"; Parameters: """{app}\tools\configure-obs.js"" u
 ; leftovers from the old "MultiChat" name
 Type: files; Name: "{app}\obs-multichat.lua"
 Type: files; Name: "{app}\multichat.log"
+; shortcuts from v1.3 and older (replaced by the "UltraChat" app window)
+Type: files; Name: "{group}\Painel do UltraChat.url"
+Type: files; Name: "{group}\Iniciar UltraChat.lnk"
+Type: files; Name: "{autodesktop}\Painel do UltraChat.url"
 
 [UninstallDelete]
 Type: files; Name: "{app}\ultrachat.log"
 Type: files; Name: "{app}\config.json"
 Type: files; Name: "{app}\loyalty.json"
 Type: files; Name: "{app}\loyalty.json.tmp"
+Type: files; Name: "{app}\gifts.json"
+Type: files; Name: "{app}\auth.json"
+Type: filesandordirs; Name: "{app}\.app-profile"
 
 [Code]
 function ObsRunning(): Boolean;

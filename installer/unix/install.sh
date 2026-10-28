@@ -42,9 +42,41 @@ fi
 
 "$DEST/node/bin/node" "$DEST/tools/configure-obs.js" install
 
+# "UltraChat" app shortcut: opens the panel in its own window (starts the server if needed).
+if [ "$(uname -s)" = "Darwin" ]; then
+  APP="$HOME/Applications/UltraChat.app"
+  rm -rf "$APP"
+  mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+  cat > "$APP/Contents/Info.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleName</key><string>UltraChat</string>
+  <key>CFBundleIdentifier</key><string>io.github.eliezertsilva.ultrachat</string>
+  <key>CFBundleExecutable</key><string>UltraChat</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+</dict></plist>
+PLIST
+  printf '#!/bin/sh\nexec "%s/node/bin/node" "%s/tools/app.mjs"\n' "$DEST" "$DEST" > "$APP/Contents/MacOS/UltraChat"
+  chmod +x "$APP/Contents/MacOS/UltraChat"
+else
+  mkdir -p "$HOME/.local/share/applications"
+  cat > "$HOME/.local/share/applications/ultrachat.desktop" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=UltraChat
+Comment=Configurar o UltraChat
+Exec="$DEST/node/bin/node" "$DEST/tools/app.mjs"
+Icon=$DEST/public/logo.svg
+Terminal=false
+Categories=AudioVideo;Utility;
+DESKTOP
+fi
+
 echo ""
 echo "  Pronto! Abra o OBS: o UltraChat liga sozinho e aparecem os docks"
 echo "  'UltraChat - Chat' e 'UltraChat - Painel' (menu Painéis/Docks)."
+echo "  Para configurar sem o OBS, abra o app 'UltraChat' no menu de aplicativos."
 echo ""
 echo "  Overlay para a Fonte de Navegador: http://localhost:8787/overlay.html"
 echo "  Para desinstalar: sh \"$DEST/uninstall.sh\""

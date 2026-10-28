@@ -70,6 +70,7 @@ export class TikTokConnector extends BaseConnector {
           type: 'gift',
           hidden: !cfg.showGifts,
           diamonds,
+          gift: { id: d.giftId ?? g.giftId, name, count, unitDiamonds: g.diamondCount || 0, image },
           user: userFrom(d),
           highlight: `enviou ${count > 1 ? count + 'x ' : ''}${name}`,
           amount: diamonds ? `${diamonds} 💎` : undefined,
@@ -89,7 +90,7 @@ export class TikTokConnector extends BaseConnector {
     conn.on(
       WebcastEvent.SHARE,
       live((d) => {
-        if (cfg.showShares) this.publish({ type: 'event', user: userFrom(d), highlight: 'compartilhou a live', parts: [] });
+        this.publish({ type: 'share', hidden: !cfg.showShares, user: userFrom(d), highlight: 'compartilhou a live', parts: [] });
       }),
     );
 

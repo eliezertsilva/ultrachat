@@ -6,6 +6,9 @@ import { WebSocketServer } from 'ws';
 import { loadConfig, saveConfig } from './config.js';
 import { Hub } from './hub.js';
 import { Loyalty } from './loyalty.js';
+import { TwitchAuth } from './twitch-auth.js';
+import fs from 'node:fs';
+import { Alerts, EVENT_LABELS, MEDIA_DIR, deleteMedia, listMedia, saveMedia } from './alerts.js';
 import { TwitchConnector } from './connectors/twitch.js';
 import { TikTokConnector } from './connectors/tiktok.js';
 import { YouTubeConnector } from './connectors/youtube.js';
@@ -17,6 +20,9 @@ const HOST = '127.0.0.1';
 let config = loadConfig();
 const hub = new Hub(() => config);
 const loyalty = new Loyalty(hub, () => config);
+const alerts = new Alerts(hub, () => config);
+const twitchAuth = new TwitchAuth(hub, () => config);
+const VERSION = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8')).version;
 
 const connectors = {
   twitch: new TwitchConnector(hub),
@@ -40,6 +46,7 @@ function applyConnectors(prev) {
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(ROOT, 'public')));
+app.use('/media', express.static(MEDIA_DIR));
 
 app.get('/api/config', (_req, res) => res.json(config));
 
@@ -57,6 +64,7 @@ app.post('/api/config', (req, res) => {
   applyConnectors(prev);
   broadcast({ type: 'config', overlay: config.overlay });
   loyalty.leaderboardChanged(); // rank names may have changed
+  twitchAuth.refreshEvents(); // channel may have changed
   res.json({ ok: true, config, restartNeeded: prev.port !== config.port });
 });
 
@@ -83,6 +91,43 @@ app.get('/api/loyalty', (req, res) => {
 app.post('/api/loyalty/reset', (_req, res) => {
   loyalty.reset();
   res.json({ ok: true });
+});
+
+app.get('/api/info', (_req, res) => res.json({ version: VERSION }));
+
+// ---------- Twitch login (optional) ----------
+app.get('/api/twitch/auth', (_req, res) => res.json(twitchAuth.status()));
+app.post('/api/twitch/auth/start', async (_req, res) => {
+  try {
+    res.json(await twitchAuth.start());
+  } catch (err) {
+    res.json({ state: 'off', error: `Não consegui falar com a Twitch: ${err.message}` });
+  }
+});
+app.post('/api/twitch/auth/logout', async (_req, res) => res.json(await twitchAuth.logout()));
+
+// ---------- alerts ----------
+app.get('/api/alerts/meta', (_req, res) => {
+  res.json({ media: listMedia(), gifts: alerts.giftList(), events: EVENT_LABELS });
+});
+
+app.post('/api/alerts/test', (req, res) => {
+  res.json({ ok: alerts.test(String(req.body?.id || '')) });
+});
+
+// Upload: raw body, file name in the X-File-Name header (URI-encoded).
+app.post('/api/media', express.raw({ type: () => true, limit: '300mb' }), (req, res) => {
+  try {
+    const name = saveMedia(decodeURIComponent(String(req.get('X-File-Name') || '')), req.body);
+    res.json({ ok: true, name, media: listMedia() });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete('/api/media/:name', (req, res) => {
+  deleteMedia(req.params.name);
+  res.json({ ok: true, media: listMedia() });
 });
 
 app.post('/api/shutdown', (_req, res) => {
@@ -184,6 +229,7 @@ server.listen(config.port, HOST, () => {
   console.log(`  Dock (chat para você ler): ${base}/overlay.html?dock=1`);
   console.log('');
   applyConnectors(null);
+  twitchAuth.refreshEvents();
 });
 
 // Save points before exiting (process.exit from /api/shutdown, Ctrl+C, closing the window).

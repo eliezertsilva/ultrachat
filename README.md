@@ -109,6 +109,23 @@ top.html?platforms=tiktok         (só TikTok)
 top.html?fontSize=24&avatars=0
 ```
 
+## Alertas
+Alertas próprios (vídeo, GIF, imagem, som e texto) para eventos das quatro plataformas, configurados no painel (seção **Alertas**):
+
+- Cada alerta tem **quando** (plataforma + evento, com presente específico ou faixa de diamantes/bits/valor) e **o que mostrar** (mídia, som, texto com `{nome}`, `{quantidade}`, `{presente}`, `{valor}`, `{mensagem}`, `{meses}`, posição, tamanho, cor e duração).
+- Os alertas entram numa fila: nunca aparecem um em cima do outro.
+- Envie as mídias pelo painel; elas ficam na pasta `media/`. A lista de presentes do TikTok se monta sozinha com os presentes que aparecem na sua live.
+- Botão **Testar** em cada alerta.
+
+Overlay: Fonte de Navegador com `http://localhost:8787/alerts.html` no tamanho da tela (1920×1080), com **Controlar áudio via OBS** marcado.
+
+Eventos sem login: TikTok (presentes, follow, compartilhamento, sub), Twitch (sub, subs de presente, bits, raid), YouTube (Super Chat, Super Sticker, membro) e Kick (sub, subs de presente).
+
+**Follow da Twitch:** em *Conexões → Twitch*, clique em **Conectar conta da Twitch** e digite o código que aparece em twitch.tv/activate (use a conta do canal ou de um moderador). O UltraChat nunca vê sua senha; o acesso fica em `auth.json` e pode ser desfeito em **Desconectar**.
+
+## Abrir o UltraChat sem o OBS
+O atalho **UltraChat** (menu Iniciar / área de trabalho no Windows, menu de aplicativos no macOS e Linux) abre o painel numa janela própria e liga o servidor se ele estiver desligado. A partir do código: `node tools/app.mjs`.
+
 ## Problemas comuns
 - **TikTok: erro de "rate limit"** — a conexão do TikTok usa um serviço de assinatura gratuito (Euler Stream) com limite de uso. Crie uma API key grátis em eulerstream.com e cole em *TikTok → Avançado*.
 - **Kick parou de conectar com erro de "chave"** — a Kick troca a chave do chat de vez em quando. Atualize o projeto ou preencha *Kick → Pusher key*.
