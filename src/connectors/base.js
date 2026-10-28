@@ -80,3 +80,15 @@ export function cleanName(input, hostPattern) {
 export function textPart(text) {
   return { type: 'text', text: String(text ?? '') };
 }
+
+/**
+ * Turns a display amount like "R$ 10,00", "$5.99" or "1.000 ₫" into a number.
+ * A final separator followed by 1–2 digits is the decimal point; any other is a thousands separator.
+ */
+export function parseMoney(input) {
+  const s = String(input ?? '').replace(/[^\d.,]/g, '');
+  if (!s) return 0;
+  const m = /^(.*?)[.,](\d{1,2})$/.exec(s);
+  const whole = (m ? m[1] : s).replace(/[.,]/g, '');
+  return Number(`${whole || 0}.${m ? m[2] : 0}`) || 0;
+}

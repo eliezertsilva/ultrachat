@@ -67,6 +67,8 @@ Type: files; Name: "{app}\multichat.log"
 [UninstallDelete]
 Type: files; Name: "{app}\ultrachat.log"
 Type: files; Name: "{app}\config.json"
+Type: files; Name: "{app}\loyalty.json"
+Type: files; Name: "{app}\loyalty.json.tmp"
 
 [Code]
 function ObsRunning(): Boolean;

@@ -171,6 +171,7 @@ export class TwitchConnector extends BaseConnector {
       sourceId: m.tags.id,
       type: bits ? 'donation' : 'chat',
       amount: bits ? `${bits} bits` : undefined,
+      bits: bits || undefined,
       action,
       user: this.userFrom(m),
       parts: twitchParts(text, m.tags.emotes),
@@ -182,10 +183,14 @@ export class TwitchConnector extends BaseConnector {
     const isSub = /sub|gift|primepaidupgrade|giftpaidupgrade/i.test(kind);
     const isRaid = kind === 'raid';
     if (!isSub && !isRaid) return;
+    const user = this.userFrom(m);
+    // A gift of N subs arrives as one "submysterygift" summary plus N "subgift" notices: count only the latter.
+    const subCount = /mysterygift/i.test(kind) || user.login === 'ananonymousgifter' ? 0 : 1;
     this.publish({
       sourceId: m.tags.id,
       type: isRaid ? 'raid' : 'sub',
-      user: this.userFrom(m),
+      subCount,
+      user,
       highlight: m.tags['system-msg'] || '',
       parts: m.trailing ? twitchParts(m.trailing, m.tags.emotes) : [],
     });

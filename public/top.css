@@ -1,0 +1,77 @@
+:root {
+  --font-size: 20px;
+  --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: var(--font);
+  font-size: var(--font-size);
+  color: #fff;
+}
+
+#box { padding: 0.6em; display: grid; gap: 0.4em; }
+
+h1 {
+  margin: 0 0 0.1em;
+  font-size: 1.1em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35em; }
+
+.row {
+  --accent: #888;
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.4em 0.7em;
+  border-radius: 0.7em;
+  background: rgba(16, 16, 22, 0.65);
+  border-left: 0.22em solid var(--accent);
+  backdrop-filter: blur(4px);
+}
+.row[data-platform="tiktok"]  { --accent: #FE2C55; }
+.row[data-platform="twitch"]  { --accent: #9146FF; }
+.row[data-platform="youtube"] { --accent: #FF0033; }
+.row[data-platform="kick"]    { --accent: #53FC18; }
+
+.pos {
+  flex: none;
+  width: 1.6em;
+  height: 1.6em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.85em;
+  background: rgba(255, 255, 255, 0.12);
+}
+.pos-1 .pos { background: #f5c542; color: #2a1f00; }
+.pos-2 .pos { background: #c9d1dc; color: #1c2128; }
+.pos-3 .pos { background: #d08a4f; color: #2a1405; }
+
+.avatar { width: 1.8em; height: 1.8em; border-radius: 50%; object-fit: cover; flex: none; background: rgba(255, 255, 255, 0.15); }
+
+.who { flex: 1; min-width: 0; display: grid; line-height: 1.2; }
+.line { display: flex; align-items: center; gap: 0.35em; min-width: 0; }
+.name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank { font-size: 0.7em; color: rgba(255, 255, 255, 0.72); }
+
+.pf-icon { display: inline-flex; width: 0.95em; height: 0.95em; flex: none; }
+.pf-icon svg { width: 100%; height: 100%; }
+
+.points { font-weight: 800; font-variant-numeric: tabular-nums; }
+
+.bump .points { animation: bump 0.7s ease; }
+@keyframes bump {
+  30% { transform: scale(1.25); color: #ffe066; }
+}
+
+#empty { margin: 0; font-size: 0.75em; color: rgba(255, 255, 255, 0.7); text-shadow: 0 1px 2px #000; }

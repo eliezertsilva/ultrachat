@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { loadConfig, saveConfig } from './config.js';
 import { Hub } from './hub.js';
+import { Loyalty } from './loyalty.js';
 import { TwitchConnector } from './connectors/twitch.js';
 import { TikTokConnector } from './connectors/tiktok.js';
 import { YouTubeConnector } from './connectors/youtube.js';
@@ -15,6 +16,7 @@ const HOST = '127.0.0.1';
 
 let config = loadConfig();
 const hub = new Hub(() => config);
+const loyalty = new Loyalty(hub, () => config);
 
 const connectors = {
   twitch: new TwitchConnector(hub),
@@ -54,6 +56,7 @@ app.post('/api/config', (req, res) => {
   config = saveConfig(req.body || {});
   applyConnectors(prev);
   broadcast({ type: 'config', overlay: config.overlay });
+  loyalty.leaderboardChanged(); // rank names may have changed
   res.json({ ok: true, config, restartNeeded: prev.port !== config.port });
 });
 
@@ -69,6 +72,16 @@ app.post('/api/clear', (_req, res) => {
 
 app.post('/api/test', (_req, res) => {
   sendTestMessages();
+  res.json({ ok: true });
+});
+
+app.get('/api/loyalty', (req, res) => {
+  const limit = Math.min(500, Math.max(1, Number(req.query.limit) || 50));
+  res.json({ top: loyalty.top(limit), ...loyalty.stats() });
+});
+
+app.post('/api/loyalty/reset', (_req, res) => {
+  loyalty.reset();
   res.json({ ok: true });
 });
 
@@ -93,7 +106,15 @@ function broadcast(payload) {
 hub.on('broadcast', broadcast);
 
 wss.on('connection', (ws) => {
-  ws.send(JSON.stringify({ type: 'hello', overlay: config.overlay, history: hub.history, status: hub.status }));
+  ws.send(
+    JSON.stringify({
+      type: 'hello',
+      overlay: config.overlay,
+      history: hub.history,
+      status: hub.status,
+      leaderboard: loyalty.top(50),
+    }),
+  );
 });
 
 // Keep sockets alive behind OBS's browser (it can silently drop idle sockets).
@@ -134,7 +155,15 @@ function sendTestMessages() {
       amount: '5 💎',
       parts: [],
     },
+    {
+      platform: 'twitch',
+      type: 'bot',
+      user: { name: config.loyalty.botName || 'UltraChat', roles: ['bot'], color: '#a78bfa' },
+      parts: [{ type: 'text', text: '@ViewerTwitch: rank Veterano · 2.340 pts · #3 no geral · faltam 7.660 para Elite.' }],
+    },
   ];
+  // Test messages never earn points or run commands.
+  for (const s of samples) s.test = true;
   samples.forEach((s, i) => setTimeout(() => hub.publish(s), i * 600));
 }
 
@@ -156,6 +185,10 @@ server.listen(config.port, HOST, () => {
   console.log('');
   applyConnectors(null);
 });
+
+// Save points before exiting (process.exit from /api/shutdown, Ctrl+C, closing the window).
+process.on('exit', () => loyalty.flush());
+for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, () => process.exit(0));
 
 process.on('unhandledRejection', (err) => console.error('[erro]', err?.message || err));
 process.on('uncaughtException', (err) => {

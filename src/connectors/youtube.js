@@ -1,5 +1,5 @@
 import { Innertube, Log } from 'youtubei.js';
-import { BaseConnector, BROWSER_UA, textPart } from './base.js';
+import { BaseConnector, BROWSER_UA, parseMoney, textPart } from './base.js';
 
 // The library prints long parser warnings whenever YouTube adds new fields; they are harmless.
 Log.setLevel(Log.Level.NONE);
@@ -147,6 +147,7 @@ export class YouTubeConnector extends BaseConnector {
           sourceId: item.id,
           type: 'donation',
           amount: item.purchase_amount,
+          value: parseMoney(item.purchase_amount),
           highlight: 'Super Chat',
           user: userFrom(item.author),
           parts: partsFromText(item.message),
@@ -156,6 +157,7 @@ export class YouTubeConnector extends BaseConnector {
           sourceId: item.id,
           type: 'donation',
           amount: item.purchase_amount,
+          value: parseMoney(item.purchase_amount),
           highlight: 'Super Sticker',
           image: item.sticker?.[0]?.url,
           user: userFrom(item.author),

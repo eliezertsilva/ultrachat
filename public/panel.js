@@ -5,6 +5,7 @@
     overlayUrl: `${base}/overlay.html`,
     dockUrl: `${base}/overlay.html?dock=1`,
     panelUrl: `${base}/`,
+    topUrl: `${base}/top.html`,
   };
   for (const [id, url] of Object.entries(urls)) document.getElementById(id).textContent = url;
   document.getElementById('preview').src = urls.overlayUrl;
@@ -15,6 +16,10 @@
     .then(({ url }) => {
       urls.overlayUrl = url;
       document.getElementById('overlayUrl').textContent = url;
+      if (url.includes('%2Foverlay.html')) {
+        urls.topUrl = url.replace('%2Foverlay.html', '%2Ftop.html');
+        document.getElementById('topUrl').textContent = urls.topUrl;
+      }
     })
     .catch(() => {});
 
@@ -56,6 +61,7 @@
       if (input.type === 'checkbox') input.checked = !!v;
       else input.value = v ?? '';
     }
+    ranksBox.value = (cfg.loyalty?.ranks || []).map((r) => `${r.name} = ${r.min}`).join('\n');
     updateOutputs();
   }
 
@@ -69,7 +75,19 @@
       else v = input.value.trim();
       set(cfg, input.name, v);
     }
+    cfg.loyalty.ranks = parseRanks(ranksBox.value);
     return cfg;
+  }
+
+  // "Nome = 500" per line (":" also works); lines without a number are ignored.
+  const ranksBox = document.getElementById('ranks');
+  function parseRanks(text) {
+    const out = [];
+    for (const line of text.split('\n')) {
+      const m = /^(.+?)\s*[=:]\s*(\d[\d.]*)\s*$/.exec(line.trim());
+      if (m) out.push({ name: m[1].trim(), min: Number(m[2].replace(/\./g, '')) });
+    }
+    return out.sort((a, b) => a.min - b.min);
   }
 
   function updateOutputs() {
@@ -92,6 +110,7 @@
   async function save() {
     const r = await api('/api/config', read());
     current = r.config;
+    ranksBox.value = current.loyalty.ranks.map((x) => `${x.name} = ${x.min}`).join('\n');
     const saved = document.getElementById('saved');
     saved.textContent = r.restartNeeded ? 'Salvo — reinicie o UltraChat para trocar a porta' : 'Salvo ✓';
     saved.hidden = false;
@@ -115,6 +134,46 @@
   document.getElementById('testBtn').onclick = () => api('/api/test', {});
   document.getElementById('clearBtn').onclick = () => api('/api/clear', {});
   document.getElementById('reconnectBtn').onclick = () => api('/api/reconnect', {});
+
+  // ---------- ranking ----------
+  const fmt = (n) => Number(n).toLocaleString('pt-BR');
+  const boardBody = document.getElementById('board');
+
+  function renderBoard(top) {
+    boardBody.replaceChildren(
+      ...top.map((t) => {
+        const tr = document.createElement('tr');
+        const pos = document.createElement('td');
+        pos.textContent = t.pos;
+        const who = document.createElement('td');
+        who.className = 'who';
+        who.append(MC.icon(t.platform), document.createTextNode(` ${t.name}`));
+        who.title = `${t.platform}:${t.login}`;
+        const rank = document.createElement('td');
+        rank.textContent = t.rank || '—';
+        const pts = document.createElement('td');
+        pts.className = 'num';
+        pts.textContent = fmt(t.points);
+        tr.append(pos, who, rank, pts);
+        return tr;
+      }),
+    );
+    document.getElementById('boardEmpty').hidden = top.length > 0;
+  }
+
+  async function loadBoard() {
+    const r = await api('/api/loyalty?limit=50');
+    renderBoard(r.top);
+    document.getElementById('boardStats').textContent = r.users
+      ? `${fmt(r.users)} pessoas · ${fmt(r.points)} pontos distribuídos`
+      : '';
+  }
+
+  document.getElementById('resetPointsBtn').onclick = async () => {
+    if (!confirm('Zerar os pontos de TODO mundo? Isso não pode ser desfeito.')) return;
+    await api('/api/loyalty/reset', {});
+    loadBoard();
+  };
 
   // ---------- live status ----------
   const LABELS = {
@@ -143,6 +202,7 @@
     ws.onmessage = (ev) => {
       const data = JSON.parse(ev.data);
       if (data.status) showStatus(data.status);
+      if (data.type === 'leaderboard') loadBoard();
     };
     ws.onclose = () => {
       pill.textContent = 'servidor desligado';
@@ -156,5 +216,6 @@
     fill(cfg);
   });
   showStatus({});
+  loadBoard();
   connectWs();
 })();

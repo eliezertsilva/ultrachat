@@ -59,7 +59,6 @@ export class TikTokConnector extends BaseConnector {
     conn.on(
       WebcastEvent.GIFT,
       live((d) => {
-        if (!cfg.showGifts) return;
         const g = d.giftDetails || {};
         // Streakable gifts (type 1) fire repeatedly; only show the final count.
         if (g.giftType === 1 && !d.repeatEnd) return;
@@ -69,6 +68,8 @@ export class TikTokConnector extends BaseConnector {
         const diamonds = (g.diamondCount || d.extendedGiftInfo?.diamond_count || 0) * count;
         this.publish({
           type: 'gift',
+          hidden: !cfg.showGifts,
+          diamonds,
           user: userFrom(d),
           highlight: `enviou ${count > 1 ? count + 'x ' : ''}${name}`,
           amount: diamonds ? `${diamonds} 💎` : undefined,
@@ -81,7 +82,7 @@ export class TikTokConnector extends BaseConnector {
     conn.on(
       WebcastEvent.FOLLOW,
       live((d) => {
-        if (cfg.showFollows) this.publish({ type: 'follow', user: userFrom(d), highlight: 'começou a seguir', parts: [] });
+        this.publish({ type: 'follow', hidden: !cfg.showFollows, user: userFrom(d), highlight: 'começou a seguir', parts: [] });
       }),
     );
 

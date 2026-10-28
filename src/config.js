@@ -23,6 +23,26 @@ export const DEFAULT_CONFIG = {
     hideCommands: true,
     blockedUsers: 'nightbot, streamelements, moobot',
   },
+  loyalty: {
+    enabled: true,
+    pointsPerMessage: 5,
+    messageCooldown: 60, // segundos entre mensagens que valem pontos
+    pointsPerFollow: 50, // só no primeiro follow de cada pessoa
+    pointsPerSub: 500,
+    pointsPerDiamond: 10, // TikTok
+    pointsPerBit: 1, // Twitch
+    pointsPerSuperChat: 100, // YouTube, por unidade da moeda
+    commandCooldown: 10, // segundos, por pessoa e por comando
+    botName: 'UltraChat',
+    commands: { points: '!pontos, !points', rank: '!rank', top: '!top' },
+    ranks: [
+      { name: 'Novato', min: 0 },
+      { name: 'Frequente', min: 500 },
+      { name: 'Veterano', min: 2000 },
+      { name: 'Elite', min: 10000 },
+      { name: 'Lenda', min: 50000 },
+    ],
+  },
   overlay: {
     theme: 'bubble', // bubble | clean | compact
     fontSize: 18,

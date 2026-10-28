@@ -46,6 +46,14 @@
         <code id="panelUrl"></code>
         <button type="button" class="ghost" data-copy="panelUrl">Copiar</button>
       </div>
+      <div class="link-row">
+        <div>
+          <strong>Ranking (Top 5)</strong>
+          <small>Fonte de Navegador com os 5 que têm mais pontos (ex.: 360×420)</small>
+        </div>
+        <code id="topUrl"></code>
+        <button type="button" class="ghost" data-copy="topUrl">Copiar</button>
+      </div>
     </section>
 
     <form id="form">
@@ -172,6 +180,65 @@
         <label>Usuários bloqueados (separados por vírgula)
           <input name="filters.blockedUsers" placeholder="nightbot, streamelements" autocomplete="off">
         </label>
+        <small>Usuários bloqueados também não ganham pontos nem usam comandos.</small>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>5. Pontos e ranks</h2>
+          <label class="switch" title="Ligar/desligar pontos e comandos"><input type="checkbox" name="loyalty.enabled"><span></span></label>
+        </div>
+        <div class="grid">
+          <label>Pontos por mensagem
+            <input type="number" name="loyalty.pointsPerMessage" min="0">
+          </label>
+          <label>Intervalo entre mensagens que pontuam (s)
+            <input type="number" name="loyalty.messageCooldown" min="0" max="3600">
+          </label>
+          <label>Pontos por follow (TikTok)
+            <input type="number" name="loyalty.pointsPerFollow" min="0">
+          </label>
+          <label>Pontos por sub / membro
+            <input type="number" name="loyalty.pointsPerSub" min="0">
+          </label>
+          <label>Pontos por diamante (TikTok)
+            <input type="number" name="loyalty.pointsPerDiamond" min="0">
+          </label>
+          <label>Pontos por bit (Twitch)
+            <input type="number" name="loyalty.pointsPerBit" min="0">
+          </label>
+          <label>Pontos por unidade de Super Chat (YouTube)
+            <input type="number" name="loyalty.pointsPerSuperChat" min="0">
+          </label>
+        </div>
+        <small class="hint">Cada pessoa é contada por plataforma (quem está no TikTok e na Twitch aparece duas vezes). Follow só pontua uma vez por pessoa. Super Chat usa o valor na moeda de quem enviou.</small>
+
+        <h3 class="sub-h">Ranks</h3>
+        <div class="grid">
+          <label>Um por linha: <em>Nome = pontos mínimos</em>
+            <textarea id="ranks" rows="6" spellcheck="false" placeholder="Novato = 0&#10;Frequente = 500"></textarea>
+          </label>
+          <div class="grid one">
+            <label>Comando de pontos
+              <input name="loyalty.commands.points" placeholder="!pontos" autocomplete="off">
+            </label>
+            <label>Comando de rank
+              <input name="loyalty.commands.rank" placeholder="!rank" autocomplete="off">
+            </label>
+            <label>Comando do top 5
+              <input name="loyalty.commands.top" placeholder="!top" autocomplete="off">
+            </label>
+          </div>
+          <div class="grid one">
+            <label>Nome do bot no overlay
+              <input name="loyalty.botName" placeholder="UltraChat" autocomplete="off">
+            </label>
+            <label>Intervalo entre comandos, por pessoa (s)
+              <input type="number" name="loyalty.commandCooldown" min="0" max="600">
+            </label>
+          </div>
+        </div>
+        <small class="hint">Separe apelidos com vírgula (ex.: <code>!pontos, !points</code>). A resposta aparece só no overlay, não no chat da plataforma. Os comandos funcionam mesmo com “Esconder comandos” ligado.</small>
       </section>
 
       <div class="actions">
@@ -182,6 +249,21 @@
         <span id="saved" class="saved" hidden>Salvo ✓</span>
       </div>
     </form>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Ranking</h2>
+        <span id="boardStats" class="muted"></span>
+        <button type="button" id="resetPointsBtn" class="ghost danger">Zerar pontos</button>
+      </div>
+      <div class="board-wrap">
+        <table class="board">
+          <thead><tr><th>#</th><th>Pessoa</th><th>Rank</th><th class="num">Pontos</th></tr></thead>
+          <tbody id="board"></tbody>
+        </table>
+      </div>
+      <p id="boardEmpty" class="muted">Ninguém tem pontos ainda. Eles aparecem aqui conforme o chat conversa.</p>
+    </section>
 
     <section class="card">
       <h2>Prévia</h2>

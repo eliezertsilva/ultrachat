@@ -18,25 +18,35 @@ export class Hub extends EventEmitter {
   publish(msg) {
     const full = { id: randomUUID(), ts: Date.now(), type: 'chat', parts: [], ...msg };
     full.user = { name: '', roles: [], ...(msg.user || {}) };
-    if (this.isFiltered(full)) return;
+    if (this.isBlocked(full)) return;
+    // Listeners (points, commands) see every message before the display filters,
+    // including events published with `hidden: true` (counted but not shown).
+    this.emit('incoming', full);
+    if (full.hidden || this.isHiddenCommand(full)) return;
     this.history.push(full);
     if (this.history.length > HISTORY_SIZE) this.history.shift();
     this.emit('broadcast', { type: 'message', msg: full });
   }
 
   isFiltered(msg) {
+    return this.isBlocked(msg) || this.isHiddenCommand(msg);
+  }
+
+  isBlocked(msg) {
     const { filters } = this.getConfig();
     const name = (msg.user.login || msg.user.name || '').toLowerCase().replace(/^@/, '');
     const blocked = (filters.blockedUsers || '')
       .split(',')
       .map((s) => s.trim().toLowerCase().replace(/^@/, ''))
       .filter(Boolean);
-    if (blocked.includes(name)) return true;
-    if (filters.hideCommands && msg.type === 'chat') {
-      const first = msg.parts.find((p) => p.type === 'text');
-      if (msg.parts[0] === first && first?.text.trimStart().startsWith('!')) return true;
-    }
-    return false;
+    return blocked.includes(name);
+  }
+
+  isHiddenCommand(msg) {
+    const { filters } = this.getConfig();
+    if (!filters.hideCommands || msg.type !== 'chat') return false;
+    const first = msg.parts.find((p) => p.type === 'text');
+    return msg.parts[0] === first && !!first?.text.trimStart().startsWith('!');
   }
 
   deleteMessage(platform, id) {

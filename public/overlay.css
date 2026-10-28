@@ -185,3 +185,7 @@ body.dock .msg { animation: none !important; }
   padding: 0.4em 0.7em;
   border-radius: 0.4em;
 }
+
+/* ---------- bot replies (!pontos, !rank, !top) ---------- */
+.role.bot { background: #7c5cff; }
+.msg.type-bot { --accent: #a78bfa; }

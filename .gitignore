@@ -5,3 +5,7 @@ installer/node/
 installer/Output/
 .claude/
 installer/node-cache/
+diagnostico/
+loyalty.json
+loyalty.json.tmp
+loyalty.corrompido-*.json

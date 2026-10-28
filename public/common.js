@@ -30,6 +30,7 @@ window.MC = (() => {
     sub: { text: 'SUB', cls: 'sub' },
     member: { text: 'MEMBRO', cls: 'sub' },
     verified: { text: '✔', cls: 'verified' },
+    bot: { text: 'BOT', cls: 'bot' },
   };
 
   function icon(platform) {

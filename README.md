@@ -91,6 +91,24 @@ overlay.html?hideAfter=15&align=right
 
 Temas: `bubble` (balões), `clean` (só texto), `compact` (uma linha).
 
+## Pontos, ranks e comandos
+O chat ganha pontos nas quatro plataformas, sem precisar de TikFinity ou outro programa. Tudo é configurado no painel (seção **Pontos e ranks**):
+
+- **Mensagem** (com intervalo mínimo entre mensagens que pontuam), **follow** (TikTok, só o primeiro), **sub/membro**, **diamantes** (TikTok), **bits** (Twitch) e **Super Chat** (YouTube, por unidade da moeda).
+- **Ranks** por faixa de pontos, um por linha: `Veterano = 2000`.
+- **Comandos** `!pontos`, `!rank` e `!top`. A resposta aparece no overlay como mensagem do bot (o UltraChat não escreve no chat das plataformas). Funcionam mesmo com "Esconder comandos" ligado.
+- Cada pessoa é contada por plataforma (`tiktok:fulano` e `twitch:fulano` são pontuações separadas).
+- Os pontos ficam em `loyalty.json`, na pasta do UltraChat. O painel mostra o ranking e tem o botão **Zerar pontos**.
+
+Overlay do ranking (Fonte de Navegador, ex.: 360×420): `http://localhost:8787/top.html`
+
+```
+top.html?limit=10                 (top 10)
+top.html?title=Top%20da%20live    (título; title= vazio esconde)
+top.html?platforms=tiktok         (só TikTok)
+top.html?fontSize=24&avatars=0
+```
+
 ## Problemas comuns
 - **TikTok: erro de "rate limit"** — a conexão do TikTok usa um serviço de assinatura gratuito (Euler Stream) com limite de uso. Crie uma API key grátis em eulerstream.com e cole em *TikTok → Avançado*.
 - **Kick parou de conectar com erro de "chave"** — a Kick troca a chave do chat de vez em quando. Atualize o projeto ou preencha *Kick → Pusher key*.
