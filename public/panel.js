@@ -9,6 +9,15 @@
   for (const [id, url] of Object.entries(urls)) document.getElementById(id).textContent = url;
   document.getElementById('preview').src = urls.overlayUrl;
 
+  // For the OBS source, prefer the loader URL: it survives OBS starting before the server.
+  fetch('/api/source-url')
+    .then((r) => r.json())
+    .then(({ url }) => {
+      urls.overlayUrl = url;
+      document.getElementById('overlayUrl').textContent = url;
+    })
+    .catch(() => {});
+
   document.querySelectorAll('[data-icon]').forEach((el) => el.append(MC.icon(el.dataset.icon)));
 
   document.querySelectorAll('[data-copy]').forEach((btn) =>

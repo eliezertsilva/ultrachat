@@ -15,6 +15,13 @@
   // This local page waits for the server, then goes to the real page.
   const target = new URLSearchParams(location.search).get('to') || 'http://localhost:8787/';
   const origin = new URL(target).origin;
+  // As an OBS source (stream overlay) this page must stay invisible while it waits.
+  const t = new URL(target);
+  if (t.pathname.endsWith('overlay.html') && !t.searchParams.has('dock')) {
+    document.documentElement.style.background = 'transparent';
+    document.body.style.background = 'transparent';
+    document.getElementById('msg').style.display = 'none';
+  }
   let tries = 0;
   function check() {
     const s = document.createElement('script');

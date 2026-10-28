@@ -1,7 +1,7 @@
 import express from 'express';
 import { createServer } from 'node:http';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { loadConfig, saveConfig } from './config.js';
 import { Hub } from './hub.js';
@@ -40,6 +40,14 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(ROOT, 'public')));
 
 app.get('/api/config', (_req, res) => res.json(config));
+
+// OBS loads browser sources before this server is up; a source pointing at the
+// local loader page waits for the server instead of showing an error page.
+app.get('/api/source-url', (_req, res) => {
+  const loader = pathToFileURL(path.join(ROOT, 'dock-loader.html')).href;
+  const to = `http://localhost:${config.port}/overlay.html`;
+  res.json({ url: `${loader}?to=${encodeURIComponent(to)}` });
+});
 
 app.post('/api/config', (req, res) => {
   const prev = config;
