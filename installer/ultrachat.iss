@@ -2,7 +2,7 @@
 ; Compile: ISCC.exe installer\ultrachat.iss  -> installer\Output\UltraChat-Setup.exe
 
 #define AppName "UltraChat para OBS"
-#define AppVersion "1.2.0"
+#define AppVersion "1.3.0"
 #define Src ".."
 
 [Setup]

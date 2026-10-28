@@ -118,6 +118,42 @@
   .msg .role.sub { background: #6441a5; }
   .msg.event { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 40%, transparent), rgba(16,16,22,.75) 75%); }
   .msg .hl { color: var(--c); font-weight: 700; filter: brightness(1.3); }
+
+  .msg .role.bot { background: #7c5cff; }
+  .msg.bot { --c: #a78bfa; }
+  .msg .av.bot { font-size: 16px; }
+  a.eyebrow { text-decoration: none; }
+  a.eyebrow:hover { border-color: rgba(167,139,250,.8); }
+
+  /* points and ranks */
+  .loyal { display: grid; grid-template-columns: 1fr 0.9fr; gap: 48px; align-items: center; }
+  .loyal .intro { color: var(--muted); font-size: 18px; margin: 0 0 24px; }
+  .earn { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 0 24px; padding: 0; list-style: none; }
+  .earn li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 15px; display: flex; gap: 10px; align-items: center; }
+  .earn li span { font-size: 18px; }
+  .cmds { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
+  .cmds code { font-size: 15px; padding: 4px 10px; }
+  .board {
+    border-radius: 24px; padding: 22px; border: 1px solid var(--line);
+    background: radial-gradient(circle at 80% 0%, rgba(124,58,237,.35), transparent 60%), #15121f;
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.7);
+  }
+  .board h3 { margin: 0 0 12px; font-size: 18px; }
+  .board ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .board li {
+    --c: #888; display: flex; align-items: center; gap: 12px;
+    background: rgba(16,16,22,.72); border-left: 3px solid var(--c); border-radius: 12px; padding: 9px 12px;
+  }
+  .board .pos { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; background: rgba(255,255,255,.12); flex: none; }
+  .board li:nth-child(1) .pos { background: #f5c542; color: #2a1f00; }
+  .board li:nth-child(2) .pos { background: #c9d1dc; color: #1c2128; }
+  .board li:nth-child(3) .pos { background: #d08a4f; color: #2a1405; }
+  .board .who { flex: 1; min-width: 0; line-height: 1.2; }
+  .board .who b { display: flex; align-items: center; gap: 6px; }
+  .board .who svg { width: 14px; height: 14px; color: var(--c); flex: none; }
+  .board .who small { color: var(--muted); font-size: 12px; }
+  .board .pts { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .board .note { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
   @keyframes enter { from { opacity: 0; transform: translateX(-16px) scale(.97); } to { opacity: 1; transform: none; } }
 
   /* sections */
@@ -186,12 +222,13 @@
   @media (max-width: 900px) {
     .hero .wrap { grid-template-columns: 1fr; }
     .platforms { grid-template-columns: repeat(2, 1fr); }
-    .features, .steps, .os-grid { grid-template-columns: 1fr; }
+    .features, .steps, .os-grid, .loyal { grid-template-columns: 1fr; }
     .nav-links a:not(.gh) { display: none; }
   }
   @media (max-width: 520px) {
     .wrap { padding: 0 16px; }
     .platforms { grid-template-columns: 1fr; }
+    .earn { grid-template-columns: 1fr; }
     .hero { padding: 56px 0 64px; }
     .demo { height: 380px; }
     section { padding: 64px 0; }
@@ -206,6 +243,7 @@
     <a class="brand" href="#"><img src="logo.svg" alt="">UltraChat</a>
     <div class="nav-links">
       <a href="#recursos">Recursos</a>
+      <a href="#pontos">Pontos</a>
       <a href="#instalar">Como instalar</a>
       <a href="#duvidas">Dúvidas</a>
       <a class="gh" href="https://github.com/eliezertsilva/ultrachat">GitHub</a>
@@ -216,7 +254,7 @@
 <header class="hero">
   <div class="wrap">
     <div>
-      <span class="eyebrow">✦ Grátis e sem login</span>
+      <a class="eyebrow" href="#pontos">✦ Novo: pontos, ranks e !comandos</a>
       <h1>Todos os seus chats.<br><span class="grad">Uma tela só.</span></h1>
       <p class="lead">O UltraChat junta o chat do TikTok, Twitch, YouTube e Kick em um overlay bonito no OBS — e liga sozinho junto com ele.</p>
       <div class="ctas">
@@ -226,7 +264,7 @@
         </a>
         <a class="btn" href="#baixar">Outros sistemas</a>
       </div>
-      <p class="fine">Windows · macOS · Linux · OBS Studio 28 ou mais novo</p>
+      <p class="fine">Grátis e sem login · Windows · macOS · Linux · OBS Studio 28 ou mais novo</p>
     </div>
     <div class="demo" aria-label="Exemplo do overlay com mensagens de várias plataformas">
       <span class="live">AO VIVO</span>
@@ -271,6 +309,36 @@
       <div class="feat"><div class="ico">🛡️</div><h3>Filtros</h3><p>Esconda comandos com “!” e bots como Nightbot e StreamElements.</p></div>
       <div class="feat"><div class="ico">🔓</div><h3>Sem login</h3><p>Só leitura: não pede senha nem acesso às suas contas. Tudo roda no seu PC.</p></div>
       <div class="feat"><div class="ico">🎯</div><h3>Overlays por cena</h3><p>Mostre só o TikTok numa cena e tudo junto em outra, direto pelo link da fonte.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="pontos">
+  <div class="wrap loyal">
+    <div>
+      <h2>Pontos e ranks para<br><span class="grad">todo o seu chat</span></h2>
+      <p class="intro">Quem participa ganha pontos e sobe de rank — no TikTok, na Twitch, no YouTube e na Kick. Sem TikFinity e sem programa extra.</p>
+      <ul class="earn">
+        <li><span>💬</span> Mensagens no chat</li>
+        <li><span>💎</span> Presentes do TikTok</li>
+        <li><span>⭐</span> Subs e membros</li>
+        <li><span>💜</span> Bits e Super Chats</li>
+        <li><span>➕</span> Novos seguidores</li>
+        <li><span>🏅</span> Ranks com seus nomes</li>
+      </ul>
+      <div class="cmds">Comandos: <code>!pontos</code> <code>!rank</code> <code>!top</code></div>
+      <p class="fine">Você escolhe quanto vale cada coisa e os nomes dos ranks no painel. A resposta dos comandos aparece no overlay.</p>
+    </div>
+    <div class="board" aria-label="Exemplo do overlay de ranking">
+      <h3>🏆 Top 5 da live</h3>
+      <ol>
+        <li style="--c: var(--tiktok)"><span class="pos">1</span><span class="who"><b><svg data-icon="tiktok"></svg>luana.gamer</b><small>Lenda</small></span><span class="pts">52.340</span></li>
+        <li style="--c: var(--twitch)"><span class="pos">2</span><span class="who"><b><svg data-icon="twitch"></svg>NightOwl</b><small>Elite</small></span><span class="pts">18.900</span></li>
+        <li style="--c: var(--youtube)"><span class="pos">3</span><span class="who"><b><svg data-icon="youtube"></svg>@julia.m</b><small>Elite</small></span><span class="pts">11.250</span></li>
+        <li style="--c: var(--kick)"><span class="pos">4</span><span class="who"><b><svg data-icon="kick"></svg>ZéDoKick</b><small>Veterano</small></span><span class="pts">4.780</span></li>
+        <li style="--c: var(--tiktok)"><span class="pos">5</span><span class="who"><b><svg data-icon="tiktok"></svg>thi.ago</b><small>Frequente</small></span><span class="pts">1.320</span></li>
+      </ol>
+      <p class="note">Coloque na cena com <code>localhost:8787/top.html</code> — atualiza ao vivo.</p>
     </div>
   </div>
 </section>
@@ -354,6 +422,14 @@
         <p>Sim. Os dois rodam lado a lado; o UltraChat só cuida do chat.</p>
       </details>
       <details>
+        <summary>Como funcionam os pontos?</summary>
+        <p>Cada pessoa ganha pontos por mensagem (com um intervalo para não valer spam), presentes, subs, bits, Super Chats e follows. Os valores e os ranks você define no painel. Por enquanto a mesma pessoa em plataformas diferentes tem pontuações separadas.</p>
+      </details>
+      <details>
+        <summary>O bot responde no chat da plataforma?</summary>
+        <p>Não. O UltraChat continua só lendo o chat, sem login. As respostas de <code>!pontos</code>, <code>!rank</code> e <code>!top</code> aparecem no overlay da live, para todo mundo ver.</p>
+      </details>
+      <details>
         <summary>O TikTok deu erro de “rate limit”.</summary>
         <p>A conexão com o TikTok usa um serviço gratuito com limite de uso. Crie uma chave grátis no eulerstream.com e cole em <em>TikTok → Avançado</em> no painel.</p>
       </details>
@@ -424,16 +500,18 @@
     ['twitch', 'marcelo_tv', '#c4b5fd', 'se inscreveu por 6 meses!', 'sub', true],
     ['youtube', '@julia.m', '#fda4af', 'Super Chat R$ 10,00 — manda um salve!', null, true],
     ['tiktok', 'thi.ago', '#67e8f9', 'como você junta todos os chats??'],
+    ['kick', 'ZéDoKick', '#bef264', '!rank'],
+    ['kick', 'UltraChat', '#a78bfa', '@ZéDoKick: rank Veterano · 4.780 pts · #4 no geral', 'bot', false, true],
     ['twitch', 'Bruna_', '#f0abfc', 'UltraChat 🔥'],
   ];
   const feed = document.getElementById('feed');
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
   let i = 0;
   function push() {
-    const [pf, name, avColor, text, role, event] = SCRIPT[i++ % SCRIPT.length];
-    const m = el('div', 'msg' + (event ? ' event' : ''));
-    m.style.setProperty('--c', COLORS[pf]);
-    const av = el('div', 'av', name.replace('@', '')[0].toUpperCase());
+    const [pf, name, avColor, text, role, event, bot] = SCRIPT[i++ % SCRIPT.length];
+    const m = el('div', 'msg' + (event ? ' event' : '') + (bot ? ' bot' : ''));
+    if (!bot) m.style.setProperty('--c', COLORS[pf]);
+    const av = el('div', 'av' + (bot ? ' bot' : ''), bot ? '🤖' : name.replace('@', '')[0].toUpperCase());
     av.style.background = avColor;
     const body = el('div');
     const head = el('div', 'head');
