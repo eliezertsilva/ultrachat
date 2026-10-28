@@ -154,6 +154,20 @@
   .board .who small { color: var(--muted); font-size: 12px; }
   .board .pts { font-weight: 800; font-variant-numeric: tabular-nums; }
   .board .note { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+
+  /* alerts */
+  .alerts-sec { display: grid; grid-template-columns: 0.9fr 1fr; gap: 48px; align-items: center; }
+  .alert-demo {
+    position: relative; height: 340px; border-radius: 24px; overflow: hidden; border: 1px solid var(--line);
+    background: radial-gradient(circle at 70% 30%, #3b2a6b, transparent 60%), radial-gradient(circle at 20% 90%, #6b1d45, transparent 55%), #15121f;
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.7); display: grid; place-items: center;
+  }
+  .alert-pop { text-align: center; animation: pop 2.6s cubic-bezier(.2,.9,.3,1.25) infinite; }
+  .alert-pop .big { font-size: 84px; line-height: 1; filter: drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
+  .alert-pop .txt { margin-top: 10px; font-size: 24px; font-weight: 800; text-shadow: 0 2px 8px #000; }
+  .alert-pop .txt b { color: #FE2C55; }
+  .alert-demo .tag { position: absolute; top: 16px; left: 16px; font-size: 12px; font-weight: 800; letter-spacing: .06em; background: rgba(255,255,255,.12); padding: 4px 10px; border-radius: 6px; }
+  @keyframes pop { 0% { opacity: 0; transform: scale(.6); } 12%, 80% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.9); } }
   @keyframes enter { from { opacity: 0; transform: translateX(-16px) scale(.97); } to { opacity: 1; transform: none; } }
 
   /* sections */
@@ -222,7 +236,7 @@
   @media (max-width: 900px) {
     .hero .wrap { grid-template-columns: 1fr; }
     .platforms { grid-template-columns: repeat(2, 1fr); }
-    .features, .steps, .os-grid, .loyal { grid-template-columns: 1fr; }
+    .features, .steps, .os-grid, .loyal, .alerts-sec { grid-template-columns: 1fr; }
     .nav-links a:not(.gh) { display: none; }
   }
   @media (max-width: 520px) {
@@ -233,7 +247,7 @@
     .demo { height: 380px; }
     section { padding: 64px 0; }
   }
-  @media (prefers-reduced-motion: reduce) { .msg { animation: none; } html { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) { .msg, .alert-pop { animation: none; } html { scroll-behavior: auto; } }
 </style>
 </head>
 <body>
@@ -244,6 +258,7 @@
     <div class="nav-links">
       <a href="#recursos">Recursos</a>
       <a href="#pontos">Pontos</a>
+      <a href="#alertas">Alertas</a>
       <a href="#instalar">Como instalar</a>
       <a href="#duvidas">Dúvidas</a>
       <a class="gh" href="https://github.com/eliezertsilva/ultrachat">GitHub</a>
@@ -254,9 +269,9 @@
 <header class="hero">
   <div class="wrap">
     <div>
-      <a class="eyebrow" href="#pontos">✦ Novo: pontos, ranks e !comandos</a>
+      <a class="eyebrow" href="#alertas">✦ Novo: alertas com seus vídeos e sons</a>
       <h1>Todos os seus chats.<br><span class="grad">Uma tela só.</span></h1>
-      <p class="lead">O UltraChat junta o chat do TikTok, Twitch, YouTube e Kick em um overlay bonito no OBS — e liga sozinho junto com ele.</p>
+      <p class="lead">O UltraChat junta o chat do TikTok, Twitch, YouTube e Kick em um overlay bonito no OBS, com alertas próprios, pontos e ranks — e liga sozinho junto com ele.</p>
       <div class="ctas">
         <a class="btn primary" id="dl-main" href="#baixar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
@@ -303,7 +318,7 @@
     </div>
 
     <div class="features" style="margin-top: 16px">
-      <div class="feat"><div class="ico">⚡</div><h3>Liga com o OBS</h3><p>Instalou, esqueceu. O UltraChat abre escondido quando o OBS abre e fecha junto.</p></div>
+      <div class="feat"><div class="ico">⚡</div><h3>Liga com o OBS</h3><p>Instalou, esqueceu. O UltraChat abre escondido quando o OBS abre — e tem janela própria para configurar sem o OBS.</p></div>
       <div class="feat"><div class="ico">🎨</div><h3>Três estilos</h3><p>Balões, só texto ou compacto. Ajuste fonte, fundo, alinhamento e tempo na tela.</p></div>
       <div class="feat"><div class="ico">🧩</div><h3>Docks no OBS</h3><p>Leia o chat e mude as configurações sem sair do OBS — até numa segunda tela.</p></div>
       <div class="feat"><div class="ico">🛡️</div><h3>Filtros</h3><p>Esconda comandos com “!” e bots como Nightbot e StreamElements.</p></div>
@@ -339,6 +354,28 @@
         <li style="--c: var(--tiktok)"><span class="pos">5</span><span class="who"><b><svg data-icon="tiktok"></svg>thi.ago</b><small>Frequente</small></span><span class="pts">1.320</span></li>
       </ol>
       <p class="note">Coloque na cena com <code>localhost:8787/top.html</code> — atualiza ao vivo.</p>
+    </div>
+  </div>
+</section>
+
+<section id="alertas">
+  <div class="wrap alerts-sec">
+    <div class="alert-demo" aria-label="Exemplo de alerta na tela">
+      <span class="tag">ALERTA</span>
+      <div class="alert-pop"><div class="big">🦁</div><div class="txt"><b>luana.gamer</b> mandou um Leão!</div></div>
+    </div>
+    <div>
+      <h2>Alertas do seu jeito,<br><span class="grad">sem TikFinity</span></h2>
+      <p class="intro">Escolha o que acontece na tela quando chega um presente, um sub, bits ou um Super Chat — com o seu vídeo, o seu som e o seu texto.</p>
+      <ul class="earn">
+        <li><span>🎁</span> Presente específico do TikTok</li>
+        <li><span>💎</span> Faixas de diamantes e bits</li>
+        <li><span>⭐</span> Subs, membros e raids</li>
+        <li><span>🎬</span> Vídeo, GIF, imagem e som</li>
+        <li><span>🧵</span> Fila: nunca um em cima do outro</li>
+        <li><span>▶️</span> Botão Testar em cada alerta</li>
+      </ul>
+      <p class="fine">Coloque <code>localhost:8787/alerts.html</code> numa Fonte de Navegador do tamanho da tela.</p>
     </div>
   </div>
 </section>
@@ -428,6 +465,14 @@
       <details>
         <summary>O bot responde no chat da plataforma?</summary>
         <p>Não. O UltraChat continua só lendo o chat, sem login. As respostas de <code>!pontos</code>, <code>!rank</code> e <code>!top</code> aparecem no overlay da live, para todo mundo ver.</p>
+      </details>
+      <details>
+        <summary>Posso trocar os alertas do StreamElements pelos do UltraChat?</summary>
+        <p>Pode. Crie os alertas no UltraChat com os mesmos vídeos e desligue os mesmos eventos no StreamElements, para não aparecerem duas vezes. Com tudo no UltraChat, os alertas de todas as plataformas entram numa fila só. O follow da Twitch ainda precisa do StreamElements (o login da Twitch chega numa próxima versão).</p>
+      </details>
+      <details>
+        <summary>Preciso abrir o OBS para configurar?</summary>
+        <p>Não. O atalho <strong>UltraChat</strong> abre o painel numa janela própria e liga o UltraChat se ele estiver desligado.</p>
       </details>
       <details>
         <summary>O TikTok deu erro de “rate limit”.</summary>

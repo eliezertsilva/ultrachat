@@ -241,6 +241,11 @@
   let twPoll = null;
 
   function showTwitchAuth(s) {
+    const available = s.available || s.state === 'connected';
+    document.getElementById('twitchAuth').hidden = !available;
+    document.getElementById('alertsTwitchHint').hidden = !available;
+    document.getElementById('twitchLoginSoon').hidden = available;
+    AlertsEditor.setTwitchFollow(available);
     tw.code.hidden = s.state !== 'pending';
     tw.connect.hidden = s.state === 'connected' || s.state === 'pending';
     tw.disconnect.hidden = s.state !== 'connected';

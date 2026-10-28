@@ -11,7 +11,7 @@ window.AlertsEditor = (() => {
   const EVENTS_BY_PLATFORM = {
     any: ['gift', 'follow', 'share', 'sub', 'subgift', 'bits', 'superchat', 'raid'],
     tiktok: ['gift', 'follow', 'share', 'sub'],
-    twitch: ['follow', 'sub', 'subgift', 'bits', 'raid'], // follow needs "Conectar Twitch"
+    twitch: ['sub', 'subgift', 'bits', 'raid'], // + 'follow' when the Twitch login is available
     youtube: ['superchat', 'sub'],
     kick: ['sub', 'subgift'],
   };
@@ -299,6 +299,14 @@ window.AlertsEditor = (() => {
         input.value = '';
       };
       refreshMeta();
+    },
+    /** Twitch follow alerts need the optional Twitch login. */
+    setTwitchFollow(on) {
+      const list = EVENTS_BY_PLATFORM.twitch;
+      const has = list.includes('follow');
+      if (on && !has) list.unshift('follow');
+      if (!on && has) list.splice(list.indexOf('follow'), 1);
+      if (on !== has) render();
     },
     load(cfgRules) {
       rules = structuredClone(cfgRules || []);

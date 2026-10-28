@@ -63,11 +63,12 @@ export class TwitchAuth {
 
   // ---------- status ----------
   status() {
+    const available = !!this.clientId; // login is hidden in the panel until there is a Client ID
     if (this.pending) {
-      return { state: 'pending', userCode: this.pending.userCode, verificationUri: this.pending.verificationUri };
+      return { state: 'pending', available, userCode: this.pending.userCode, verificationUri: this.pending.verificationUri };
     }
-    if (this.data) return { state: 'connected', login: this.data.login, detail: this.detail };
-    return { state: 'off', error: this.error };
+    if (this.data) return { state: 'connected', available, login: this.data.login, detail: this.detail };
+    return { state: 'off', available, error: this.error };
   }
 
   announce() {
